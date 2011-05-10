@@ -1,0 +1,11 @@
+div.course_chooser {
+  display: none;
+}
+
+div.calendar {
+  width: 90%;
+}
+
+div#social_links {
+  display: none;
+}

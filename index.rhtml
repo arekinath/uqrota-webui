@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- UQRota, copyright Alex Wilson 2010 -->
+<!-- released under a BSD-style license -->
+
+<html>
+<head>
+<title>UQRota</title>
+
+<% rnum = (Kernel.rand*1e10).to_i.to_s
+rnum = 9128179285 %>
+<link rel="stylesheet" href="css/screen.css?<%= rnum %>"/>
+<link rel="stylesheet" media="print" href="css/printer.css"/>
+<link rel="stylesheet" href="resources/css/ext-all.css"/>
+<script type="text/javascript" src="js/prototype.js"></script>
+<!--script type="text/javascript" src="js/effects.js"></script>-->
+
+<script type="text/javascript" src="js/ext-prototype-adapter.js"></script>
+<script type="text/javascript" src="js/ext-all.js"></script>
+
+<script type="text/javascript" src="js/application.js?<%= rnum %>"></script>
+<script type="text/javascript" src="js/course_selector.js?<%= rnum %>"></script>
+<script type="text/javascript" src="js/calendar.js?<%= rnum %>"></script>
+<script type="text/javascript" src="js/server.js?<%= rnum %>"></script>
+<script type="text/javascript" src="js/storage.js?<%= rnum %>"></script>
+<script type="text/javascript" src="js/init.js?<%= rnum %>"></script>
+
+</head>
+<body>
+<div class="header">UQRota <span id="msg_tag" style="font-size: 0.5em;">Slightly simpler than mySI-net!</span></div>
+<div class="menubar" id="mainmenu"></div>
+<div id="social_links">
+  <a href="http://www.twitter.com/uqrota"><img src="http://twitter-badges.s3.amazonaws.com/follow_bird_us-b.png" alt="Follow uqrota on Twitter"/></a>
+</div>
+<div id="calendar"></div>
+<div id="loading_status"></div>
+<div id="weekslider" style="display: none;"></div>
+<div id="permalink" style="display: none;"></div>
+<div id="disclaimer"><a href="/wiki">Help and support</a><br/>NB: Timetable information displayed here may be up to 24 hours out of date. If you require up-to-date information please use the &quot;re-sync&quot; feature or refer to mySI-net itself. <a href="/wiki/Updates">Read more about our update strategy</a></div>
+<div id="log"></div>
+<noscript>
+	<div id="noscript_text">
+		<h1>No javascript enabled</h1>
+		<p>UQRota is an alternative interface to the UQ timetabling system that's easier to get around, and clearer to read than mySI-net. It's especially helpful to answer questions like, &quot;I want to do this elective, does it fit with my timetable?&quot;, <i>without</i> having to spend half an hour mucking around with SI-net and a pencil and pen.</p>
+	<p>At the moment, you seem to either have Javascript switched off, or are using a browser without Javascript support. To see and use UQRota, please enable Javascript, or switch to a browser that supports it.</p>
+	</div>
+</noscript>
+</body>
+</html>

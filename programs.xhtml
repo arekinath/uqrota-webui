@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:svg="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink">
+  <head>
+    <title>SVG animation test</title>
+	<style type="text/css">
+		body {
+			font-family: Sans-serif;
+		}
+	</style>
+	<script type="text/javascript" src="js/prototype.js"></script>
+	<script type="text/javascript" src="js/effects.js"></script>
+	<script type="text/javascript">
+		<![CDATA[
+		Object.extend(Event, {
+		        wheel:function (event){
+		                var delta = 0;
+		                if (!event) event = window.event;
+		                if (event.wheelDelta) {
+		                        delta = event.wheelDelta/120; 
+		                        if (window.opera) delta = -delta;
+		                } else if (event.detail) { delta = -event.detail/3;     }
+		                return Math.round(delta); //Safari Round
+		        }
+		});
+	
+		Effect.ColourChange = Class.create({
+			initialize: function(init_colour, final_colour, options, setter) {
+				var colour_convert = function(c) {
+					if (c.r) {
+						return c;
+					} else {
+						return {r: parseInt(c.slice(0,2),16), g: parseInt(c.slice(2,4),16), b: parseInt(c.slice(4,6),16) };
+					}
+				};
+				
+				this.init_colour = colour_convert(init_colour);
+				this.final_colour = colour_convert(final_colour);
+				this.colour = this.init_colour;
+				this.setter = setter;
+				
+				new Effect.Parallel([
+					new Effect.Tween(null, this.init_colour.r, this.final_colour.r, {sync:true}, function (val) {
+						this.colour.r = val;
+						this.callSetter();
+					}.bind(this)),
+					new Effect.Tween(null, this.init_colour.g, this.final_colour.g, {sync:true}, function (val) {
+						this.colour.g = val;
+						this.callSetter();
+					}.bind(this)),
+					new Effect.Tween(null, this.init_colour.b, this.final_colour.b, {sync:true}, function (val) {
+						this.colour.b = val;
+						this.callSetter();
+					}.bind(this))
+					], options);
+			},
+			
+			callSetter: function() {
+				var toHex = function(int) {
+					var s = Math.round(int).toString(16);
+					if (s.length < 2) s = '0'+s;
+					return s;
+				};
+				this.setter('#' + toHex(this.colour.r) + toHex(this.colour.g) + toHex(this.colour.b));
+			}
+		});
+	
+		var NodeManager = Class.create({
+			initialize: function(svgRoot) {
+				this.selectedNodes = new Array();
+				this.root = svgRoot;
+				this.graph = this.findTagClass(svgRoot.childNodes, 'g', 'graph');
+				this.nodes = $A(this.graph.childNodes).select(function (n) {
+					return (n.tagName == 'g' && this.isTagOfClass(n, 'node'));
+				}.bind(this));
+				
+				for (var i=0; i<this.nodes.size(); i++) {
+					var node = this.nodes[i];
+					$A(node.childNodes).each(function (cn) {
+						cn.onclick = this.clickHandlerFor(i);
+					}.bind(this));
+					
+					var ellipse = this.childWithTag(node, 'ellipse');
+					if (ellipse) ellipse.setAttribute('fill', 'white');
+				}
+			},
+			
+			nodeTitle: function(node) {
+				var title = this.childWithTag(node, 'title');
+				return title.childNodes[0].textContent;
+			},
+			
+			updateSelectionList: function() {
+				var l = $('list_selected');
+				l.update('');
+				
+				var ul = new Element('ul');
+				l.appendChild(ul);
+				
+				this.selectedNodes.each(function (nodeIdx) {
+					var li = new Element('li');
+					li.update(this.nodeTitle(this.nodes[nodeIdx]));
+					ul.appendChild(li);
+				}.bind(this));
+			},
+			
+			childWithTag: function(node, tag) {
+				return $A(node.childNodes).find(function (cn) { return (cn.tagName == tag); });
+			},
+			
+			childrenWithTag: function(node, tag) {
+				return $A(node.childNodes).select(function (cn) { return (cn.tagName == tag); });
+			},
+			
+			clickHandlerFor: function(nodeIdx) {
+				return (function(evt) {
+					this.nodeClick(nodeIdx);
+					return false;
+				}.bind(this));
+			},
+			
+			nodeClick: function(nodeIdx) {
+				this.toggleSelect(nodeIdx);
+			},
+			
+			toggleSelect: function(nodeIdx) {
+				if (this.selectedNodes.include(nodeIdx)) {
+					this.selectedNodes = this.selectedNodes.without(nodeIdx);
+					this.hideHalo(nodeIdx);
+				} else {
+					this.selectedNodes[this.selectedNodes.length] = nodeIdx;
+					this.showHalo(nodeIdx);
+				}
+				this.updateSelectionList();
+			},
+			
+			showHalo: function(nodeIdx) {
+				var el = this.childWithTag(this.nodes[nodeIdx], 'ellipse');
+				var tx = this.childrenWithTag(this.nodes[nodeIdx], 'text');
+				new Effect.ColourChange('ffffff', '9bcd9b', {}, function(col) {
+					el.setAttribute('fill', col);
+				});
+				tx.each(function(t) {
+					t.setAttribute('fill', 'black');
+				});
+				el.setAttribute('stroke', 'black');
+			},
+			
+			hideHalo: function(nodeIdx) {
+				var el = this.childWithTag(this.nodes[nodeIdx], 'ellipse');
+				var tx = this.childrenWithTag(this.nodes[nodeIdx], 'text');
+				new Effect.ColourChange('9bcd9b', 'ffffff', {}, function(col) {
+					el.setAttribute('fill', col);
+				});
+				tx.each(function(t) {
+					t.setAttribute('fill', '#7f7f7f');
+				});
+				el.setAttribute('stroke', '#999');
+			},
+			
+			isTagOfClass: function(el, klass) {
+				var className = el.className;
+				if (className && className.baseVal) className = className.baseVal;
+				return (className.indexOf(klass) > -1);
+			},
+			
+			findTagClass: function(collection, tag, klass) {
+				var node = $A(collection).find(function(n) {
+					return (n.tagName == tag && this.isTagOfClass(n, klass));
+				}.bind(this));
+				return node;
+			}
+		});
+	
+		var ViewportManager = Class.create({
+			initialize: function(svgRoot) {
+				this.root = svgRoot;
+				this.width = parseFloat(svgRoot.getAttribute('width'));
+				this.height = parseFloat(svgRoot.getAttribute('height'));
+				svgRoot.setAttribute('width', '100%');
+				svgRoot.setAttribute('height', '100%');
+				this.limits = [0,0,this.width*2, this.height*2];
+				this.hardSetLimit();
+				$('target').setStyle({ cursor: 'move' });
+				this.aspect = $('target').clientHeight / $('target').clientWidth;
+				
+				this.setLimits([0, 0, this.width/2, this.aspect*this.width/2]);
+				
+				svgRoot.setAttribute('onmousedown', 'Application.vpm.mouseDownHandler(evt); return false;');
+				svgRoot.setAttribute('onmousemove', 'Application.vpm.mouseMoveHandler(evt); return false;');
+				svgRoot.setAttribute('onmouseup', 'Application.vpm.mouseUpHandler(evt);');
+				$('target').observe('mousewheel', this.mouseWheelHandler.bind(this), false);
+				$('target').observe('DOMMouseScroll', this.mouseWheelHandler.bind(this), false);
+				document.body.observe('mouseup', this.mouseUpHandler.bind(this));
+			},
+			
+			mouseWheelHandler: function(evt) {
+				var wheel = Event.wheel(evt);
+				this.zoom(wheel*0.4);
+				evt.stop();
+			},
+			
+			mouseDownHandler: function(evt) {
+				if (window.event) evt = window.event;
+				this.trackX = evt.clientX;
+				this.trackY = evt.clientY;
+				this.tracking = true;
+			},
+			
+			mouseUpHandler: function(evt) {
+				this.tracking = false;
+			},
+			
+			mouseMoveHandler: function(evt) {
+				if (this.tracking) {
+					var x,y;
+					if (window.event) evt = window.event;
+					x = evt.clientX;
+					y = evt.clientY;
+					var devX = x - this.trackX;
+					var devY = y - this.trackY;
+					devX = (devX / $('target').clientWidth)*this.limits[2];
+					devY = (devY / $('target').clientHeight)*this.limits[3];
+					var c = this.centerOfWindow(this.limits);
+					this.hardCenter(c[0]-devX, c[1]-devY);
+					
+					this.trackX = x;
+					this.trackY = y;
+				}
+			},
+			
+			setLimits: function(new_limits) {
+				var vpm = this;
+				var effects = new Array();
+				effects[0] = new Effect.Tween(
+					null, this.limits[0], new_limits[0], { sync: true },
+					function(v) { vpm.limits[0] = v; vpm.hardSetLimit(); }
+				);
+				effects[1] = new Effect.Tween(
+					null, this.limits[1], new_limits[1], { sync: true },
+					function(v) { vpm.limits[1] = v; vpm.hardSetLimit(); }
+				);
+				effects[2] = new Effect.Tween(
+					null, this.limits[2], new_limits[2], { sync: true },
+					function(v) { vpm.limits[2] = v; vpm.hardSetLimit(); }
+				);
+				effects[3] = new Effect.Tween(
+					null, this.limits[3], new_limits[3], { sync: true },
+					function(v) { vpm.limits[3] = v; vpm.hardSetLimit(); }
+				);
+				new Effect.Parallel(effects, { duration: 0.2 });
+			},
+			
+			hardSetLimit: function() {
+				var str = this.limits[0] + " " + this.limits[1] + " " + this.limits[2] + " " + this.limits[3];
+				this.root.setAttribute('viewBox', str);
+			},
+			
+			centerOfWindow: function(window) {
+				return [window[0]+(window[2])/2,
+						window[1]+(window[3])/2];
+			},
+			
+			center: function(centerX, centerY) {
+				var curcenter = this.centerOfWindow(this.limits);
+				var errX = centerX - curcenter[0];
+				var errY = centerY - curcenter[1];
+				this.setLimits([this.limits[0]+errX, this.limits[1]+errY, this.limits[2], this.limits[3]]);
+			},
+			
+			hardCenter: function(centerX, centerY) {
+				var curcenter = this.centerOfWindow(this.limits);
+				var errX = centerX - curcenter[0];
+				var errY = centerY - curcenter[1];
+				this.limits = [this.limits[0]+errX, this.limits[1]+errY, this.limits[2], this.limits[3]];
+				this.hardSetLimit();
+			},
+			
+			zoom: function(factor) {
+				var center = this.centerOfWindow(this.limits);
+				var xFromCenter = this.limits[2]/2;
+				var yFromCenter = this.limits[3]/2;
+				
+				var xDiff = xFromCenter * factor;
+				var yDiff = yFromCenter * factor;
+				
+				var newX = center[0] - (xFromCenter - xDiff);
+				var newY = center[1] - (yFromCenter - yDiff);
+				var newWidth = this.limits[2] - 2*xDiff;
+				var newHeight = this.limits[3] - 2*yDiff;
+				
+				var newLimits = [newX, newY, newWidth, newHeight];
+				
+				this.setLimits(newLimits);
+			}
+		});
+		
+		var Application = {
+			startup: function() {
+				this.fetchPlanList();
+				var q = window.location.href.toQueryParams();
+				var plan_id = 111;
+				if (q.plan_id) {
+					plan_id = q.plan_id;
+				}
+				this.getSVGLayout(plan_id);
+			},
+			
+			fetchPlanList: function() {
+				new Ajax.Request("/programs/list", {
+					method: 'get',
+					onSuccess: function(transport) {
+						var o = transport.responseJSON;
+						var div = $('select_plan');
+						div.update('');
+						
+						var ul = new Element('ul');
+						div.appendChild(ul);
+						o.programs.each(function(program) {
+							var li = new Element('li');
+							li.update(program.name);
+							ul.appendChild(li);
+							
+							var ul2 = new Element('ul');
+							li.appendChild(ul2);
+							program.plans.each(function(plan) {
+								var li2 = new Element('li');
+								var link = new Element('a');
+								link.href = '#';
+								link.update(plan.name);
+								link.observe('click', function(evt) {
+									$('target').update('<center>loading...</center>');
+									Application.getSVGLayout(plan.id);
+									evt.stop();
+								});
+								li2.appendChild(link);
+								ul2.appendChild(li2);
+							});
+						});
+					}
+				});
+			},
+			
+			getSVGLayout: function(plan_id) {
+				new Ajax.Request("/plan2svg", {
+					method: 'get',
+					parameters: { 'plan_id': plan_id },
+					onSuccess: function(transport) {
+						var text = transport.responseText;
+						var parser = new DOMParser();
+						var xmlDoc = parser.parseFromString(text, "text/xml");
+						var xmlRoot = xmlDoc.documentElement;
+						var adopted = document.importNode(xmlRoot, true);
+						$('target').update('');
+						$('target').appendChild(adopted);
+
+						this.vpm = new ViewportManager(adopted);
+						this.nm = new NodeManager(adopted);
+					}.bind(this)
+				});
+			}
+		};
+	
+		document.observe("dom:loaded", function() {
+			Application.startup();
+		});
+		]]>
+	</script>
+  </head>
+  <body>
+
+    <h1>testing ajax embed</h1>
+
+	<!--<object id="AdobeSVG" classid="clsid:78156a80-c6a1-4bbf-8e6a-3cd390eeb4e2"> </object>-->
+	<?import namespace="svg" urn="http://www.w3.org/2000/svg" implementation="#AdobeSVG"?>
+
+    <div id="target" style="border:1px solid black; width: 800px; height: 600px; float: left;">
+	<center>loading...</center></div>
+	<div id="list_selected"></div>
+	<div id="select_plan" style="width: 300px; float: left; font-size: 0.8em;"></div>
+
+  </body>
+</html>
