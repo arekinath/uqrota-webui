@@ -13,21 +13,26 @@
 <script type="text/javascript" src="js/datamodel.js"></script>
 <script type="text/javascript">
 <!--
-function runTests() {
-	document.write("Hello world!<br/>");
-	document.write("Something something.");
 
-	Course.get('COMP2303', function(course) {
-		if (course) {
-			document.write(course.getDescription());
-		} else {
-			document.write("No course for you!");
-		}
+document.observe("dom:loaded", function () {
+	console.log("testing?");
+
+	Model.Course.get('COMP2303', function (course) {
+		course.getOfferings(function (offs) {
+			offs.each(function (off) {
+				console.log("comp2303 has offering %d", off.getId());
+				
+				off.getSeries(function (sers) {
+					console.log("offering %d has %d series", off.getId(), sers.length);
+				});
+
+			});
+		});
 	});
-}
+});
 -->
 </script>
 </head>
-<body onload="runTests();">
+<body>
 </body>
 </html>
