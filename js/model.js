@@ -52,7 +52,7 @@ Resource.get = function(klass, url, id, callback) {
 				this.cache[id] = o;
 				callback(o);
 			},
-			onFailure: function (response) {
+			onFailure: function(response) {
 				callback(null);
 			}
 		});

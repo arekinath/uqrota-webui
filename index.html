@@ -8,20 +8,26 @@
 <head>
 <title>UQRota</title>
 
-<% rnum = (Kernel.rand*1e10).to_i.to_s
-rnum = 9128179285 %>
-<link rel="stylesheet" href="css/screen.css?<%= rnum %>"/>
-<link rel="stylesheet" media="print" href="css/printer.css"/>
-<link rel="stylesheet" href="resources/css/ext-all.css"/>
-<script type="text/javascript" src="js/prototype.js"></script>
+<script type="text/javascript" src="js/lib/prototype.js"></script>
 <script type="text/javascript" src="js/model.js"></script>
 <script type="text/javascript" src="js/datamodel.js"></script>
 <script type="text/javascript">
-document.observe("dom:loaded", function() {
-	document.write("Hello world.");
-});
+<!--
+function runTests() {
+	document.write("Hello world!<br/>");
+	document.write("Something something.");
+
+	Course.get('COMP2303', function(course) {
+		if (course) {
+			document.write(course.getDescription());
+		} else {
+			document.write("No course for you!");
+		}
+	});
+}
+-->
 </script>
 </head>
-<body>
+<body onload="runTests();">
 </body>
 </html>

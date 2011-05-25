@@ -2,43 +2,37 @@
  * @author Alex Wilson
  */
 
-var Semester = Class.create(Resource, {
-	cache: {}
-});
+var Semester = Class.create(Resource, {});
+Semester.cache = {};
 Semester.get = function(id, callback) {
 	Resource.get(Semester, '/semester/'+id+'.json', id, callback);
 }
 
-var Program = Class.create(Resource, {
-	cache: {}
-});
+var Program = Class.create(Resource, {});
+Program.cache = {};
 Program.get = function(id, callback) {
 	Resource.get(Program, '/program/'+id+'.json', id, callback);
 }
 
-var Plan = Class.create(Resource, {
-	cache: {}
-});
+var Plan = Class.create(Resource, {});
+Plan.cache = {};
 Plan.get = function(id, callback) {
 	Resource.get(Plan, '/plan/'+id+'.json', id, callback);
 }
 
-var CourseGroup = Class.create(Resource, {
-	cache: {}
-});
+var CourseGroup = Class.create(Resource, {});
+CourseGroup.cache = {};
 CourseGroup.get = function(id, callback) {
 	Resource.get(CourseGroup, '/coursegroup/'+id+'.json', id, callback);
 }
 
-var Course = Class.create(Resource, {
-	cache: {}
-});
+var Course = Class.create(Resource, {});
+Course.cache = {};
 Course.get = function(code, callback) {
 	Resource.get(Course, '/course/'+code+'.json', code, callback);
 }
 
 var Offering = Class.create(Resource, {
-	cache: {},
 	setData: function(data) {
 		$super(data);
 		
@@ -61,13 +55,13 @@ var Offering = Class.create(Resource, {
 		}
 	}
 });
+Offering.cache = {};
 Offering.get = function(id, callback) {
 	Resource.get(Offering, '/offering/'+id+'.json', id, callback);
 }
 
-var AssessmentTask = Class.create(Resource, {
-	cache: {}
-});
+var AssessmentTask = Class.create(Resource, {});
+AssessmentTask.cache = {};
 AssessmentTask.get = function(id, callback) {
 	if (AssessmentTask.cache[id])
 		callback(AssessmentTask.cache[id]);
@@ -76,11 +70,11 @@ AssessmentTask.get = function(id, callback) {
 }
 
 var TimetableSeries = Class.create(Resource, {
-	cache: {},
 	setData: function(data) {
 		$super(data);
 	}
 });
+TimetableSeries.cache = {};
 TimetableSeries.get = function(id, callback) {
 	if (TimetableSeries.cache[id])
 		callback(TimetableSeries.cache[id]);
