@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- UQRota, copyright Alex Wilson 2010 -->
+<!-- released under a BSD-style license -->
+
+<html>
+<head>
+<title>UQRota</title>
+
+<% rnum = (Kernel.rand*1e10).to_i.to_s
+rnum = 9128179285 %>
+<link rel="stylesheet" href="css/screen.css?<%= rnum %>"/>
+<link rel="stylesheet" media="print" href="css/printer.css"/>
+<link rel="stylesheet" href="resources/css/ext-all.css"/>
+<script type="text/javascript" src="js/prototype.js"></script>
+<script type="text/javascript" src="js/model.js"></script>
+<script type="text/javascript" src="js/datamodel.js"></script>
+<script type="text/javascript">
+document.observe("dom:loaded", function() {
+	document.write("Hello world.");
+});
+</script>
+</head>
+<body>
+</body>
+</html>
