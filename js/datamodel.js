@@ -45,20 +45,25 @@ Model.Offering.relations = [belongs_to("course"), belongs_to("semester"), has_n(
 
 Model.AssessmentTask = Class.create(Resource, {});
 Model.AssessmentTask.cache = {};
-Model.AssessmentTask.get = function(id, callback) {
-	if (Model.AssessmentTask.cache[id])
-		callback(Model.AssessmentTask.cache[id]);
-	else
-		callback(null);
-}
+Model.AssessmentTask.get = Resource._get_cache_only(Model.AssessmentTask);
 Model.AssessmentTask.relations = [belongs_to("offering")];
 
 Model.TimetableSeries = Class.create(Resource, {});
 Model.TimetableSeries.cache = {};
-Model.TimetableSeries.get = function(id, callback) {
-	if (Model.TimetableSeries.cache[id])
-		callback(Model.TimetableSeries.cache[id]);
-	else
-		callback(null);
-}
-Model.TimetableSeries.relations = [belongs_to("offering")];
+Model.TimetableSeries.get = Resource._get_cache_only(Model.TimetableSeries);
+Model.TimetableSeries.relations = [belongs_to("offering"), has_n("groups", true)];
+
+Model.TimetableGroup = Class.create(Resource, {});
+Model.TimetableGroup.cache = {};
+Model.TimetableGroup.get = Resource._get_cache_only(Model.TimetableGroup);
+Model.TimetableGroup.relations = [belongs_to("series"), has_n("sessions", true)];
+
+Model.TimetableSession = Class.create(Resource, {});
+Model.TimetableSession.cache = {};
+Model.TimetableSession.get = Resource._get_cache_only(Model.TimetableSession);
+Model.TimetableSession.relations = [belongs_to("group"), has_n("events", true)];
+
+Model.TimetableEvent = Class.create(Resource, {});
+Model.TimetableEvent.cache = {};
+Model.TimetableEvent.get = Resource._get_cache_only(Model.TimetableEvent);
+Model.TimetableEvent.relations = [belongs_to("session")];

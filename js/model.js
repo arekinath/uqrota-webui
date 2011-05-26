@@ -62,6 +62,28 @@ var Resource = Class.create({
 					}
 				};
 			}(r);
+			var getter = this[Model._fname('get',r.attr)];
+			getter.each = function(getter) {
+				return function(callback) {
+					getter(function(list) {
+						list.each(callback);
+					});
+				};
+			}(getter);
+			getter.first = function(getter) {
+				return function(callback) {
+					getter(function(list) {
+						callback(list[0]);
+					});
+				};
+			}(getter);
+			getter.at = function(getter) {
+				return function(i, callback) {
+					getter(function(list) {
+						callback(list[i]);
+					});
+				};
+			}(getter);
 			this[Model._fname('set',r.attr)] = null;
 			
 			if (r.full) {
@@ -70,12 +92,24 @@ var Resource = Class.create({
 					objs = [ objs ];
 				
 				for (var j = 0; j < objs.length; j++) {
+					var klass = Model[objs[j]['_class']];
+					
+					var krels = klass.relations;
+					var myrel = null;
+					krels.each(function (rel) {
+						if (rel.type == 'belongs_to')
+							myrel = rel.attr;
+					});
+					if (!myrel)
+						myrel = data['_class'].toLowerCase();
+					
 					var me = {};
 					var key = data['_keys'][0];
-					me[key] = data[key]; 
-					objs[j][data['_class'].toLowerCase()] = me;
+					me['_class'] = data['_class'];
+					me['_keys'] = data['_keys'];
+					me[key] = data[key];
+					objs[j][myrel] = me;
 					
-					var klass = Model[objs[j]['_class']];
 					var x = new klass();
 					x.setData(objs[j]);
 					
@@ -104,6 +138,15 @@ Resource.get = function(klass, url, id, callback) {
 			}
 		});
 	}
+}
+
+Resource._get_cache_only = function(klass) {
+	return function(id, callback) {
+		if (klass.cache[id])
+			callback(klass.cache[id]);
+		else
+			callback(null);
+	};
 }
 
 var belongs_to = function(attr, idf) {
