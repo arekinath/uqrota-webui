@@ -2,6 +2,16 @@
  * @author Alex Wilson
  */
 
+// with thanks to Filipiz, of Stack Overflow
+String.prototype.format = function() {
+    var formatted = this;
+    for (var i = 0; i < arguments.length; i++) {
+        var regexp = new RegExp('\\{'+i+'\\}', 'gi');
+        formatted = formatted.replace(regexp, arguments[i]);
+    }
+    return formatted;
+};
+
 var Model = {};
 
 var API = {};
@@ -62,11 +72,169 @@ Model._fname = function(pref, usep) {
 		}).join("");
 }
 
+function isArray(obj) {
+	return obj.constructor.toString().indexOf(' Array()') >= 0;
+}
+
 var Resource = Class.create({
 	initialize: function() {
 		this.data = {};
 	},
-	setData: function(data) {
+	
+	_resourceUrl: function() {
+		return this.constructor.url_patterns.resource.format(this._id());
+	},
+	
+	_createUrl: function() {
+		return this.constructor.url_patterns.create;
+	},
+	
+	_id: function() {
+		return this.data[this.data._keys[0]];
+	},
+	
+	refresh: function(callback) {
+		new Ajax.Request(this._resourceUrl(), {
+			method: 'get',
+			requestHeaders: {"X-Api-Secret": API.secret},
+			onSuccess: function(t) {
+				this._setData(t.responseJSON);
+				if (callback)
+					callback();
+			}.bind(this)
+		});
+	},
+	
+	destroy: function(callback) {
+		new Ajax.Request(this._resourceUrl(), {
+			method: 'delete',
+			requestHeaders: {"X-Api-Secret": API.secret},
+			onSuccess: function(t) {
+				this.constructor.cache[this._id()] = undefined;
+				this._refreshParents(callback);
+			}.bind(this)
+		});
+	},
+	
+	zeroLevelData: function(inclClass) {
+		var zld = {};
+		for (var i = 0; i < this.data._keys.length; i++) {
+			zld[this.data._keys[i]] = this.data[this.data._keys[i]];
+		}
+		if (this.constructor.relations) {
+			for (var i = 0; i < this.constructor.relations.length; i++) {
+				var r = this.constructor.relations[i];
+				if (r.type == 'belongs_to') {
+					zld[r.attr] = this.data[r.attr];
+				}
+			}
+		}
+		if (inclClass) {
+			zld['_class'] = this.data['_class'];
+			zld['_keys'] = this.data['_keys'];
+		}
+		return zld;
+	},
+	
+	firstLevelData: function(inclClass) {
+		var zld = {};
+		for (x in this.data) {
+			if (this.data[x] && !isArray(this.data[x]) && x != '_class') {
+				zld[x] = this.data[x];
+			}
+		}
+		if (inclClass) {
+			zld['_class'] = this.data['_class'];
+			zld['_keys'] = this.data['_keys'];
+		}
+		return zld;
+	},
+	
+	_saveData: function() {
+		var params = {};
+		var objnm = this.data['_class'].toLowerCase();
+		var zld = this.firstLevelData();
+		
+		for (x in zld) {
+			if (typeof(zld[x]) == 'object') {
+				if (isArray(zld[x])) {
+					for (var i = 0; i < zld[x].length; i++) {
+						params[objnm+'['+x+'['+i+']]'] = zld[x][i];
+					}
+				} else {
+					for (q in zld[x]) {
+						if (q != '_keys' && q != '_class')
+							params[objnm+'['+x+'['+q+']]'] = zld[x][q];
+					}
+				}
+			} else {
+				params[objnm+'['+x+']'] = zld[x];
+			}
+		}
+		
+		return params;
+	},
+	
+	_refreshParents: function(callback) {
+		var rels = this.constructor.relations;
+		if (rels) {
+			var sent = 0, received = 0;
+			
+			for (var i = 0; i < rels.length; i++) {
+				var rel = rels[i];
+				if (rel.type == 'belongs_to')
+					sent++;
+			}
+			
+			for (var i = 0; i < rels.length; i++) {
+				var rel = rels[i];
+				if (rel.type == 'belongs_to') {
+					var fname = Model._fname('get', rel.attr);
+					this[fname](function(obj) {
+						obj.refresh(function() {
+							received++;
+							if (received == sent && callback)
+								callback();
+						});
+					});
+				}
+			}
+		} else if (callback) {
+			callback();
+		}
+	},
+	
+	save: function(callback) {
+		var params = this._saveData();
+		
+		if (this.isNew) {
+			new Ajax.Request(this._createUrl(), {
+				method: 'put',
+				requestHeaders: {"X-Api-Secret": API.secret},
+				parameters: params,
+				onSuccess: function(t) {
+					this._setData(t.responseJSON);
+					this.isNew = false;
+					
+					// force parents to refresh
+					this._refreshParents(callback);
+				}.bind(this)
+			});
+		} else {
+			new Ajax.Request(this._resourceUrl(), {
+				method: 'post',
+				requestHeaders: {"X-Api-Secret": API.secret},
+				parameters: params,
+				onSuccess: function(t) {
+					this._setData(t.responseJSON);
+					if (callback)
+						callback();
+				}.bind(this)
+			});
+		}
+	},
+	
+	_setData: function(data) {
 		this.data = data;
 		
 		for (x in data) {
@@ -173,78 +341,26 @@ var Resource = Class.create({
 	}
 });
 
-Resource.get = function(klass, url, id, callback) {
-	if (klass.cache[id]) {
-		callback(klass.cache[id]);
-	} else {
-		new Ajax.Request(url, {
-			method: 'get',
-			onSuccess: function(r) {
-				var o = new klass();
-				o.setData(r.responseJSON);
-				klass.cache[id] = o;
-				callback(o);
-			},
-			onFailure: function(r) {
-				callback(null);
-			}
-		});
-	}
-}
-
-Resource.all = function(url, conditions, callback) {
-	new Ajax.Request(url, {
-		method: 'get',
-		parameters: { "with": Object.toJSON(conditions) },
-		onSuccess: function(t) {
-			var objs = [];
-			var sz = t.responseJSON.length;
-			
-			if (sz == 0) {
-				callback([]);
-				return;
-			}
-			
-			t.responseJSON.each(function(obj) {
-				var key = obj._keys[0];
-				Model[obj._class].get(obj[key], function(obob) {
-					objs[objs.length] = obob;
-					if (objs.length == sz)
-						callback(objs);
-				});
+Resource._get = function(klass) {
+	return function(id, callback) {
+		if (klass.cache[id]) {
+			callback(klass.cache[id]);
+		} else {
+			new Ajax.Request(klass.url_patterns.resource.format(id), {
+				method: 'get',
+				requestHeaders: {"X-Api-Secret": API.secret},
+				onSuccess: function(r) {
+					var o = new klass();
+					o._setData(r.responseJSON);
+					klass.cache[id] = o;
+					callback(o);
+				},
+				onFailure: function(r) {
+					callback(null);
+				}
 			});
 		}
-	});
-}
-
-Resource.count = function(url, conditions, callback) {
-	new Ajax.Request(url, {
-		method: 'get',
-		parameters: { "with": conditions.toJSON() },
-		onSuccess: function(t) {
-			callback(t.responseJSON.count);
-		}
-	});
-}
-
-Resource.get_auth = function(klass, url, id, callback) {
-	if (klass.cache[id]) {
-		callback(klass.cache[id]);
-	} else {
-		new Ajax.Request(url, {
-			method: 'get',
-			requestHeaders: {"X-Api-Secret": API.secret},
-			onSuccess: function(r) {
-				var o = new klass();
-				o.setData(r.responseJSON);
-				klass.cache[id] = o;
-				callback(o);
-			},
-			onFailure: function(r) {
-				callback(null);
-			}
-		});
-	}
+	};
 }
 
 Resource._get_cache_only = function(klass) {
@@ -254,6 +370,79 @@ Resource._get_cache_only = function(klass) {
 		else
 			callback(null);
 	};
+}
+
+Resource._all = function(klass) {
+	return function(conditions, callback) {
+		new Ajax.Request(klass.url_patterns.find, {
+			method: 'get',
+			parameters: { "with": Object.toJSON(conditions) },
+			requestHeaders: {"X-Api-Secret": API.secret},
+			onSuccess: function(t) {
+				var objs = [];
+				var sz = t.responseJSON.length;
+				
+				if (sz == 0) {
+					callback([]);
+					return;
+				}
+				
+				t.responseJSON.each(function(obj) {
+					var key = obj._keys[0];
+					Model[obj._class].get(obj[key], function(obob) {
+						objs[objs.length] = obob;
+						if (objs.length == sz)
+							callback(objs);
+					});
+				});
+			}
+		});
+	};
+}
+
+Resource._count = function(klass) {
+	return function(conditions, callback) {
+		new Ajax.Request(klass.url_patterns.count, {
+			method: 'get',
+			requestHeaders: {"X-Api-Secret": API.secret},
+			parameters: { "with": conditions.toJSON() },
+			onSuccess: function(t) {
+				callback(t.responseJSON.count);
+			}
+		});
+	};
+}
+
+Resource.make = function(options, funcs) {
+	if (typeof(funcs) == 'undefined') funcs = {};
+	
+	var klass = Class.create(Resource, funcs);
+	klass.cache = {};
+	klass.url_patterns = options.url_patterns;
+	klass.relations = options.relations;
+	
+	if (klass.url_patterns && klass.url_patterns.resource)
+		klass.get = Resource._get(klass);
+	else
+		klass.get = Resource._get_cache_only(klass);
+		
+	if (klass.url_patterns && klass.url_patterns.find)
+		klass.all = Resource._all(klass);
+	
+	if (klass.url_patterns && klass.url_patterns.count)
+		klass.count = Resource._count(klass);
+	
+	if (options.creator) {
+		klass.create = function(opts) {
+			var data = options.creator(opts);
+			var obj = new klass();
+			obj._setData(data);
+			obj.isNew = true;
+			return obj;
+		};
+	}
+	
+	return klass;
 }
 
 var belongs_to = function(attr, idf) {

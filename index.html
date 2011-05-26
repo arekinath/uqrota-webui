@@ -11,22 +11,34 @@
 <script type="text/javascript" src="js/lib/prototype.js"></script>
 <script type="text/javascript" src="js/model.js"></script>
 <script type="text/javascript" src="js/datamodel.js"></script>
+<script type="text/javascript" src="js/usermodel.js"></script>
 <script type="text/javascript">
 <!--
 
 document.observe("dom:loaded", function () {
 	console.log("testing?");
 
-	Model.Course.all({"name.like": "%digital%", or: {"name.like": "%transport%"}}, function(cs) {
-		console.log("%d courses with digital", cs.length);
-	});
-
-	Model.Course.get('CSSE1000', function (course) {
-		course.getOfferings.each(function (off) {
-			off.getSeries.each(function (ser) {
-				console.log("series", ser.getName());
-				ser.getGroups.each(function (g) {
-					console.log("has group ", g.getName());
+	API.login('alex', 'testing', function(success) {
+		if (success)
+			console.log("logged in ok");
+		Model.User.get('me', function(me) {
+			console.log("my email", me.getEmail());
+			console.log("current mobile = ", me.getMobile());
+			Model.Semester.get(6160, function (sem) {
+				var pb = Model.PlanBox.create({ "user": me, "semester": sem, "title": "Testing" });
+				pb.save(function() {
+					console.log("saved planbox #", pb.getId());
+					
+					me.getPlanBoxes.each(function(pb) {
+						console.log("I have planbox #", pb.getId());
+						pb.destroy(function() {
+							console.log("destroyed #", pb.getId());
+							
+							Model.PlanBox.get(pb.getId(), function(t) {
+								console.log("this should be null", t);
+							});
+						});
+					});
 				});
 			});
 		});
