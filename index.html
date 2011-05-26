@@ -17,6 +17,10 @@
 document.observe("dom:loaded", function () {
 	console.log("testing?");
 
+	Model.Course.all({"name.like": "%digital%", or: {"name.like": "%transport%"}}, function(cs) {
+		console.log("%d courses with digital", cs.length);
+	});
+
 	Model.Course.get('CSSE1000', function (course) {
 		course.getOfferings.each(function (off) {
 			off.getSeries.each(function (ser) {

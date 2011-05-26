@@ -4,6 +4,58 @@
 
 var Model = {};
 
+var API = {};
+
+API.checkLogin = function(callback) {
+	new Ajax.Request('/user/login.json', {
+		method: 'get',
+		onSuccess: function(t) {
+			if (t.responseJSON.logged_in) {
+				API.secret = t.responseJSON.secret;
+				Model.User.cache.me = undefined;
+				callback(true);
+			} else {
+				callback(false);
+			}
+		},
+		onFailure: function(t) {
+			// error message?
+		}
+	});
+}
+
+API.login = function(email, pass, callback) {
+	new Ajax.Request('/user/login.json', {
+		method: 'post',
+		parameters: { "email": email, "password": pass },
+		onSuccess: function(t) {
+			if (t.responseJSON.success) {
+				API.secret = t.responseJSON.secret;
+				Model.User.cache.me = undefined;
+				callback(true);
+			} else {
+				callback(false);
+			}
+		}
+	});
+}
+
+API.register = function(email, pass, callback) {
+	new Ajax.Request('/user/me.json', {
+		method: 'put',
+		parameters: { "user[email]": email, "user[password]": pass },
+		onSuccess: function(t) {
+			if (t.responseJSON.success) {
+				API.secret = t.responseJSON.secret;
+				Model.User.cache.me = undefined;
+				callback(true);
+			} else {
+				callback(false);
+			}
+		}
+	});
+}
+
 Model._fname = function(pref, usep) {
 	return pref + usep.split("_").collect(function (part) {
 			return part.capitalize();
@@ -127,6 +179,61 @@ Resource.get = function(klass, url, id, callback) {
 	} else {
 		new Ajax.Request(url, {
 			method: 'get',
+			onSuccess: function(r) {
+				var o = new klass();
+				o.setData(r.responseJSON);
+				klass.cache[id] = o;
+				callback(o);
+			},
+			onFailure: function(r) {
+				callback(null);
+			}
+		});
+	}
+}
+
+Resource.all = function(url, conditions, callback) {
+	new Ajax.Request(url, {
+		method: 'get',
+		parameters: { "with": Object.toJSON(conditions) },
+		onSuccess: function(t) {
+			var objs = [];
+			var sz = t.responseJSON.length;
+			
+			if (sz == 0) {
+				callback([]);
+				return;
+			}
+			
+			t.responseJSON.each(function(obj) {
+				var key = obj._keys[0];
+				Model[obj._class].get(obj[key], function(obob) {
+					objs[objs.length] = obob;
+					if (objs.length == sz)
+						callback(objs);
+				});
+			});
+		}
+	});
+}
+
+Resource.count = function(url, conditions, callback) {
+	new Ajax.Request(url, {
+		method: 'get',
+		parameters: { "with": conditions.toJSON() },
+		onSuccess: function(t) {
+			callback(t.responseJSON.count);
+		}
+	});
+}
+
+Resource.get_auth = function(klass, url, id, callback) {
+	if (klass.cache[id]) {
+		callback(klass.cache[id]);
+	} else {
+		new Ajax.Request(url, {
+			method: 'get',
+			requestHeaders: {"X-Api-Secret": API.secret},
 			onSuccess: function(r) {
 				var o = new klass();
 				o.setData(r.responseJSON);

@@ -13,6 +13,9 @@ Model.Program.cache = {};
 Model.Program.get = function(id, callback) {
 	Resource.get(Model.Program, '/program/'+id+'.json', id, callback);
 }
+Model.Program.all = function(conditions, callback) {
+	Resource.all('/programs/find.json', conditions, callback);
+}
 Model.Program.relations = [has_n("plans")];
 
 Model.Plan = Class.create(Resource, {});
@@ -33,6 +36,9 @@ Model.Course = Class.create(Resource, {});
 Model.Course.cache = {};
 Model.Course.get = function(code, callback) {
 	Resource.get(Model.Course, '/course/'+code+'.json', code, callback);
+}
+Model.Course.all = function(conditions, callback) {
+	Resource.all('/courses/find.json', conditions, callback);
 }
 Model.Course.relations = [has_n("prereqs"), has_n("dependents"), has_n("offerings")];
 
