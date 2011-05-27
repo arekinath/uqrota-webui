@@ -30,6 +30,13 @@ Model.UserSemester = Resource.make({
 	],
 	creator: function(opts) {
 		var data = {};
+		data._class = 'UserSemester';
+		data._keys = ['id'];
+		data.user = opts.user.zeroLevelData(true);
+		data.semester = opts.semester.zeroLevelData(true);
+		data.plan_boxes = [];
+		data.timetables = [];
+		data.visible = typeof(opts.visible) != 'undefined' ? opts.visible : true;
 		return data;
 	}
 });
@@ -58,29 +65,30 @@ Model.PlanBox = Resource.make({
 
 Model.Timetable = Resource.make({
 	url_patterns: {
-		create: '/my/timetables/new.json',
+		create: '/my/timetable/new.json',
 		resource: '/my/timetable/{0}.json'
 	},
 	relations: [
-		belongs_to('plan_box'),
-		has_n('course_selections')
+		belongs_to('user_semester'),
+		has_n('series_selections'),
+		has_n('group_selections')
 	],
 	creator: function(opts) {
 		var data = {};
 		data._class = 'Timetable';
 		data._keys = ['id'];
-		data.plan_box = opts.plan_box.zeroLevelData(true);
+		data.user_semester = opts.user_semester.zeroLevelData(true);
 		return data;
 	}
 });
 
 Model.CourseSelection = Resource.make({
 	url_patterns: {
-		create: '/my/course_selections/new.json',
-		resource: 'my/course_selection/{0}.json'
+		create: '/my/courseselection/new.json',
+		resource: 'my/courseselection/{0}.json'
 	},
 	relations: [
-		belongs_to('timetable'),
+		belongs_to('plan_box'),
 		belongs_to('course'),
 		has_n('series_selections'),
 		has_n('group_selections')
@@ -89,7 +97,7 @@ Model.CourseSelection = Resource.make({
 		var data = {};
 		data._class = 'CourseSelection';
 		data._keys = ['id'];
-		data.timetable = opts.timetable.zeroLevelData(true);
+		data.plan_box = opts.plan_box.zeroLevelData(true);
 		data.course = opts.course.zeroLevelData(true);
 		data.visible = typeof(opts.visible) != 'undefined' ? opts.visible : true;
 		return data;

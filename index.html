@@ -24,17 +24,9 @@ document.observe("dom:loaded", function () {
 			
 		Model.User.get('me', function(me) {
 			Model.Semester.get(6160, function (sem) {
-				
-				var pb = Model.PlanBox.create({ "user": me, "semester": sem, "title": "Testing" });
-				
-				Model.Course.get('CSSE2000', function(c) {
-					Model.Course.get('COMP2304', function(c2) {
-						pb.addCourse(c);
-						pb.addCourse(c2);
-						pb.save(function() {
-							console.log("saved planbox #", pb.getId());
-						});
-					});
+				var us = Model.UserSemester.create({ user: me, semester: sem });
+				us.save(function() {
+					console.log("saved usersemester for 6160");
 				});
 			});
 		});
