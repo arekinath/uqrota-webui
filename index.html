@@ -21,22 +21,18 @@ document.observe("dom:loaded", function () {
 	API.login('alex', 'testing', function(success) {
 		if (success)
 			console.log("logged in ok");
+			
 		Model.User.get('me', function(me) {
-			console.log("my email", me.getEmail());
-			console.log("current mobile = ", me.getMobile());
 			Model.Semester.get(6160, function (sem) {
+				
 				var pb = Model.PlanBox.create({ "user": me, "semester": sem, "title": "Testing" });
-				pb.save(function() {
-					console.log("saved planbox #", pb.getId());
-					
-					me.getPlanBoxes.each(function(pb) {
-						console.log("I have planbox #", pb.getId());
-						pb.destroy(function() {
-							console.log("destroyed #", pb.getId());
-							
-							Model.PlanBox.get(pb.getId(), function(t) {
-								console.log("this should be null", t);
-							});
+				
+				Model.Course.get('CSSE2000', function(c) {
+					Model.Course.get('COMP2304', function(c2) {
+						pb.addCourse(c);
+						pb.addCourse(c2);
+						pb.save(function() {
+							console.log("saved planbox #", pb.getId());
 						});
 					});
 				});

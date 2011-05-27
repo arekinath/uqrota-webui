@@ -175,6 +175,20 @@ var Resource = Class.create({
 		return params;
 	},
 	
+	_collectionToParams: function(collection, name) {
+		var params = {};
+		for (var i = 0; i < collection.length; i++) {
+			if (typeof(collection[i]) == 'object') {
+				for (x in collection[i]) {
+					params[name+'['+i+']['+x+']'] = collection[i][x];
+				}
+			} else {
+				params[name+'['+i+']'] = collection[i];
+			}
+		}
+		return params;
+	},
+	
 	_refreshParents: function(callback) {
 		var rels = this.constructor.relations;
 		if (rels) {
@@ -304,7 +318,16 @@ var Resource = Class.create({
 					});
 				};
 			}(getter);
-			this[Model._fname('set',r.attr)] = null;
+			
+			if (r.type == 'belongs_to') {
+				this[Model._fname('set',r.attr)] = function(r) {
+					return function(val) {
+						this.data[r.attr] = val.zeroLevelData(true);
+					};
+				}(r);
+			} else {
+				this[Model._fname('set',r.attr)] = undefined;
+			}
 			
 			if (r.full) {
 				var objs = data[r.attr];
