@@ -8,7 +8,7 @@ Model.User = Resource.make({
 		count: '/user/count.json'
 	},
 	relations: [
-		has_n('plan_boxes'),
+		has_n('user_semesters'),
 		has_n('notifications')
 	]
 },{
@@ -17,14 +17,31 @@ Model.User = Resource.make({
 	}
 });
 
-Model.PlanBox = Resource.make({
+Model.UserSemester = Resource.make({
 	url_patterns: {
-		create: '/my/planboxes/new.json',
-		resource: '/my/planbox/{0}.json'
+		resource: '/my/usersemester/{0}.json',
+		create: '/my/usersemester/new.json'
 	},
 	relations: [
 		belongs_to('user'),
+		belongs_to('semester'),
+		has_n('plan_boxes'),
 		has_n('timetables')
+	],
+	creator: function(opts) {
+		var data = {};
+		return data;
+	}
+});
+
+Model.PlanBox = Resource.make({
+	url_patterns: {
+		create: '/my/planbox/new.json',
+		resource: '/my/planbox/{0}.json'
+	},
+	relations: [
+		belongs_to('user_semester'),
+		has_n('course_selections')
 	],
 	creator: function(opts) {
 		var data = {};
@@ -36,39 +53,6 @@ Model.PlanBox = Resource.make({
 		data.courses = [];
 		data.timetables = [];
 		return data;
-	}
-},{
-	save: function($super, callback) {
-		var params = this._collectionToParams(this.data.courses, 'courses');
-		console.log(params);
-		$super(function() {
-			new Ajax.Request('/my/planbox/{0}/courses.json'.format(this._id()), {
-				method: 'post',
-				requestHeaders: {"X-Api-Secret": API.secret},
-				parameters: params,
-				onSuccess: function(t) {
-					this._setData(t.responseJSON);
-					if (callback)
-						callback();
-				}.bind(this)
-			});
-		}.bind(this));
-	},
-	
-	addCourse: function(course) {
-		this.data.courses[this.data.courses.length] = course.zeroLevelData(true);
-	},
-	
-	removeCourse: function(course) {
-		this.data.courses = this.data.courses.reject(function(c) {
-			return (c['code'] == course.getCode());
-		});
-	},
-	
-	setCourses: function(courses) {
-		this.data.courses = courses.collect(function(c) {
-			return c.zeroLevelData(true);
-		});
 	}
 });
 
