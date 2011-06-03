@@ -1,5 +1,6 @@
 body {
 	font-family: Verdana, Sans-serif;
+	background: #f8f8f8;
 }
 
 div#content {
@@ -103,4 +104,5 @@ div#main {
 	border: 2px solid #444;
 	border-top: none;
 	padding: 1em;
+	background: white;
 }
