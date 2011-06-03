@@ -1,13 +1,13 @@
-body {
+html, body {
 	font-family: Verdana, Sans-serif;
 	background: #f8f8f8;
+	height: 100%;
 }
 
 div#content {
-	margin-top: 2em;
 	margin-left: 5%;
 	margin-right: 5%;
-	margin-bottom: 2em;
+	height: 99%;
 }
 
 div#header {
@@ -105,4 +105,36 @@ div#main {
 	border-top: none;
 	padding: 1em;
 	background: white;
+	margin-bottom: 0px;
+}
+
+div#main.stretch {
+	height: 60%;
+}
+
+div.sectionhead {
+	border-bottom: 1px solid #bbb;
+	color: #999;
+	text-align: left;
+	padding-left: 1em;
+	font-size: 0.7em; 
+}
+
+div.onethird {
+	float: left;
+	width: 30%;
+	border-right: 1px dotted #bbb;
+	height: 100%;
+}
+
+div.twothirds {
+	width: 69%;
+	height: 100%;
+	float: right;
+	overflow: auto;
+}
+
+span.caption {
+	font-size: 0.7em;
+	font-family: Serif;
 }
