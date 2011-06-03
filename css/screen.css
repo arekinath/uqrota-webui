@@ -1,368 +1,106 @@
 body {
-  font-family: Sans-serif;
-  background: #f9e2be url('/images/bg_gradient.png') repeat-x;
-  padding: 0px;
-  margin: 0px;
+	font-family: Verdana, Sans-serif;
 }
 
-div.header {
-  background: #363877 url('/images/title_gradient.png') repeat-x;
-  padding: 10px;
-  color: white;
-  margin: 0px;
-  font-size: 16pt;
+div#content {
+	margin-top: 2em;
+	margin-left: 5%;
+	margin-right: 5%;
+	margin-bottom: 2em;
 }
 
-div#noscript_text {
-  margin: 20px;
-  font-size: 11pt;
+div#header {
+	background: #1e3278;
+	color: white;
+	border: 2px solid #142150;
+	border-radius: 5px;
+	font-size: 2em;
+	padding-left: 70px;
+	height: 70px;
+	background-image: url('/images/dummylogo.png');
+	background-repeat: no-repeat;
+	background-position: 10px 8px;
 }
 
-div#noscript_text h1 {
-  font-size: 14pt;
-  margin-bottom: 10pt;
+div#header div#leftpart {
+	padding-top: 0.4em;
 }
 
-div#noscript_text p {
-  margin-bottom: 10px;
+div#header span#tagline {
+	color: #afa5c9;
+	font-size: 0.4em;
 }
 
-div#social_links {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  padding-top: 5px;
-  padding-right: 5px;
-  width: 100px;
-  height: 50px;
-  text-align: right;
+div#header a {
+	color: #c9afa5;
 }
 
-div.shroud {
-  position: absolute;
-  z-index: 3;
-  background: #ddd;
-  opacity: 0.7;
-  -moz-opacity: 0.7;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+div#header div#loginbox {
+	float: right;
+	font-size: 0.5em;
+	padding-top: 1.5em;
+	padding-right: 1em;
 }
 
-div.dialog {
-  width: 28%;
-  height: 14%;
-  z-index: 5;
-  position: absolute;
-  top: 47%;
-  font-size: 11pt;
-  left: 37%;
-  background: white;
-  opacity: 0.9;
-  -moz-opacity: 0.9;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-  border: 1px solid #115;
-  padding: 10px;
-  text-align: center;
+div#nav {
+	font-size: 0.9em;
+	float: right;
+	background: #56659a;
+	margin-top: 1px;
+	border: 2px solid #142150;
+	color: white;
+	border-radius: 5px;
+	height: 2.5em;
 }
 
-div.context_menu {
-  border: 1px solid black;
-  background: #eee;
-  position: absolute;
-  width: 200px;
-  opacity: 0.9;
-  -moz-opacity: 0.9;
+div#nav a {
+	display: block;
+	float: left;
+	color: white;
+	padding: 0.5em;
+	text-align: right;
+	border-right: 1px dotted #ddd;
+	padding-left: 30px;
+	background-image: url('/images/icons/computer.png');
+	background-repeat: no-repeat;
+	background-position: 7px 11px;
 }
 
-div.context_menu a.item {
-  display: block;
-  text-decoration: none;
-  color: black;
-  font-size: 10pt;
-  border-bottom: 1px solid #aaa;
-  padding: 5px;
-  padding-left: 23px;
+div#nav a.last {
+	border-right: none;
 }
 
-div.context_menu a.item:hover {
-  background: white;
+div#tabs {
+	margin-top: 2.6em;
+	height: 28px;
+	padding-left: 1em;
+	border-bottom: 2px solid #005;
 }
 
-div.calendar {
-  background: white;
-  width: 60%;
-  height: 420px;
-  margin: 3%;
+div#tabs a {
+	font-family: Calibri, Sans-serif;
+	font-size: 15px;
+	text-decoration: none;
+	color: black;
+	float: left;
+	display: block;
+	border: 2px solid black;
+	margin-left: 0.3em;
+	margin-right: 0.3em;
+	padding: 4px;
+	height: 18px;
+	background: #c9c1a5;
 }
 
-div.calendar div {
-  position: relative;
-  width: 100%;
-  height: 100%;
+div#tabs a.active {
+	border-bottom: none;
+	background: white;
+	font-weight: bold;
+	height: 20px;
 }
 
-div.calendar div div {
-  position: absolute;
-}
-
-div.course_chooser {
-  float: right;
-  width: 29%;
-  margin-right: 5%;
-  padding: 0px;
-  height: 420px;
-  border: 1px solid #fff; 
-}
-
-div.course_sel_inner {
-  float: none;
-  display: block;
-  margin: 10px;
-}
-
-div.course_sel_inner div {
-  height: 28pt;
-}
-
-div.course_chooser div.menubar {
-  margin: 0px;
-}
-
-div#status {
-  float: right;
-  padding: 5px;
-}
-
-a.button {
-  display: block;
-  border: 1px solid #ddd;
-  font-size: 10pt;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  padding: 3pt;
-  text-decoration: none;
-  color: #115;
-}
-
-a.button:hover {
-  background: #eaeaef;
-  border: 1px solid #333;
-  border-top: 1px solid #ddd;
-  border-left: 1px solid #ddd;
-}
-
-a.button:active {
-  background: #e1e1ef;
-  border: 1px solid #333;
-  border-bottom: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-}
-
-div.menubar {
-  background: #a7a8cd url('/images/bar_gradient.png') repeat-x;
-  height: 20pt;
-  padding: 2pt;
-  padding-top: 3pt;
-  padding-left: 5pt;
-  font-size: 10pt;
-  color: #333;
-
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  -webkit-border-bottom-left-radius: 5px;
-  -webkit-border-bottom-right-radius: 5px;
-  -moz-border-radius-bottomleft: 5px;
-  -moz-border-radius-bottomright: 5px;
-}
-
-div#loading_status {
-  width: 30%;
-  float: right;
-  text-align: right;
-  color: #777;
-  margin-right: 30px;
-  font-size: 10pt;
-}
-
-div.event_bubble {
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  position: absolute;
-  text-align: center;
-  font-size: 8pt;
-  cursor: pointer;
-  overflow: hidden;
-}
-
-div.event_bubble p {
-  margin: 0px;
-  padding: 0px;
-  margin-top: 2px;
-}
-
-div.event_info {
-  padding: 3px;
-  background: #fff;
-  font-size: 10pt;
-  min-height: 4em;
-  margin-bottom: 2px;
-  border-bottom: 2px solid #ddd;
-}
-
-div#weekslider {
-  background: #fff6d2;
-  border: 1px solid #ddd;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  padding: 10px;
-  margin-left: 15px;
-  margin-top: -15px;
-  font-size: 10pt;
-  width: 60%;
-}
-
-div#permalink {
-  background: #ffecc8;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  margin-left: 15px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding: 10px;
-  font-size: 10pt;
-  width: 60%;
-}
-
-div#pagecontent {
-  background: #ffecc8;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-  margin: 15px;
-  padding: 15px;
-  padding-top: 5px;
-  font-size: 10pt;
-  border: 1px solid #bbb;
-}
-
-div#disclaimer {
-  font-size: 11px;
-  color: #777;
-  margin-left: 15px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding: 10px;
-}
-
-div.event_info div.week_container {
-  height: 40pt;
-}
-
-div.week_container div.week {
-  background: #bbb;
-  color: #ddd;
-  font-size: 7pt;
-  float: left;
-  width: 21pt;
-  height: 10pt;
-  margin: 1px;
-  border: 1px solid #555;
-}
-
-div.week_container div.taught {
-  background: white;
-  color: #008;
-  border: 1px solid black;
-}
-
-.hint {
-  color: white;
-  font-size: 8pt;
-}
-
-.redgradient {
-  background: #db7752 url('/images/red_gradient.png') repeat-x;
-}
-
-.fl {
-  float: left;
-  margin-right: 6pt;
-}
-
-.pd {
-  padding-right: 20px;
-  background: url('images/pulldown.gif') 0% 100% no-repeat;
-}
-
-div.calendar_header {
-  background: transparent;
-  position: absolute;
-  font-size: 10pt;
-}
-
-div.calendar_divider {
-  background: transparent;
-  border: 1px solid #bbb;
-  position: absolute;
-}
-
-div#pagecontent table td {
-  border: 1px solid #555;
-  background: #eed;
-  padding: 2px;
-}
-
-div#pagecontent table td.blank {
-  background: transparent;
-  border: none;
-}
-
-div#pagecontent table.blank td {
-  background: transparent;
-  border: none;
-}
-
-table#changelog {
-  background: #eed;
-  width: 100%;
-}
-
-table#changelog td {
-  border: none;
-  border-bottom: 1px solid #999;
-  padding: 5px;
-}
-
-table#changelog td.datecol {
-  color: #aaa;
-  width: 20%;
-  text-align: right;
-}
-
-table#changelog td.sourcecol {
-  width: 20%;
-}
-
-table#changelog tr.source0 td {
-  background: #edd;
-}
-
-table#changelog tr.source1 td {
-  background: #ffa;
-}
-
-table#changelog tr.source2 td {
-  background: #ada;
-}
-
-table#changelog tr.source3 td {
-  background: #add;
+div#main {
+	border: 2px solid #444;
+	border-top: none;
+	padding: 1em;
 }

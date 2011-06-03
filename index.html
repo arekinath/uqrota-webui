@@ -8,6 +8,7 @@
 <head>
 <title>UQRota</title>
 
+<link rel="stylesheet" href="css/screen.css" type="text/css"/> 
 <script type="text/javascript" src="js/lib/prototype.js"></script>
 <script type="text/javascript" src="js/model.js"></script>
 <script type="text/javascript" src="js/datamodel.js"></script>
@@ -15,7 +16,7 @@
 <script type="text/javascript">
 <!--
 
-document.observe("dom:loaded", function () {
+/*document.observe("dom:loaded", function () {
 	console.log("testing?");
 
 	API.login('alex', 'testing', function(success) {
@@ -31,10 +32,35 @@ document.observe("dom:loaded", function () {
 			});
 		});
 	});
-});
+});*/
 -->
 </script>
 </head>
 <body>
+	<div id="content">
+		<div id="header">
+			<div id="loginbox">
+				Logged in as <b>test@test.com</b>
+				&nbsp;&nbsp;<a href="#">Log out</a>
+			</div>
+			<div id="leftpart">
+				UQRota <span id="tagline">(not an official UQ service!)</span>
+			</div>
+		</div>
+		<div id="nav">
+			<a href="#">Courses &amp; timetables</a>
+			<a href="#">Groups &amp; meetings</a>
+			<a href="#">Sharing &amp; privacy</a>
+			<a href="#" class="last">Other settings</a>
+		</div>
+		<div id="tabs">
+			<a class="active" href="#">Semester plan</a>
+			<a href="#">Timetable</a>
+			<a href="#">Assessment</a>
+		</div>
+		<div id="main">
+			blah.
+		</div>
+	</div>
 </body>
 </html>
