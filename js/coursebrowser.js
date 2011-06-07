@@ -157,7 +157,7 @@ var SemesterBrowser = Class.create({
 						e.appendChild(pe);
 						
 						Droppables.add(pe, {
-							accept: 'course',
+							accept: ['course', 'ucourse'],
 							onHover: function(elem) {
 								// do something
 							},
@@ -165,8 +165,11 @@ var SemesterBrowser = Class.create({
 								// do somethng else
 								var ee = new Element('div');
 								ee.addClassName('ucourse');
+								ee.courseModel = elem.courseModel;
 								ee.update(elem.courseModel.getCode());
 								pe.appendChild(ee);
+								
+								new Draggable(ee, { revert: 'failure' });
 							}
 						});
 					});
