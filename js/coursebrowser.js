@@ -85,6 +85,7 @@ var CourseBrowser = Class.create({
 			var e = new Element('div');
 			e.addClassName('course');
 			e.update(cs.getCode());
+			e.courseModel = cs;
 			var ec = new Element('span');
 			ec.addClassName('name');
 			ec.update(cs.getName());
@@ -127,17 +128,57 @@ var CourseBrowser = Class.create({
 	}
 });
 
+var SemesterBrowser = Class.create({
+	initialize: function(mainDiv) {
+		this.mainDiv = mainDiv;
+		this.update();
+	},
+	
+	update: function() {
+		this.mainDiv.update('');
+		Model.User.get('me', function(me) {
+			me.getUserSemesters.each(function(usem) {
+				usem.getSemester(function(sem) {
+					var e = new Element('div');
+					e.addClassName('usersemester');
+					
+					var tsp = new Element('span');
+					tsp.addClassName('title');
+					tsp.update(sem.getName());
+					e.appendChild(tsp);
+					
+					usem.getPlanBoxes.each(function(pbox) {
+						var pe = new Element('div');
+						pe.addClassName('planbox');
+						var petitle = new Element('span');
+						petitle.addClassName('title');
+						petitle.update(pbox.getTitle());
+						pe.appendChild(petitle);
+						e.appendChild(pe);
+						
+						Droppables.add(pe, {
+							accept: 'course',
+							onHover: function(elem) {
+								// do something
+							},
+							onDrop: function(elem) {
+								// do somethng else
+								var ee = new Element('div');
+								ee.addClassName('ucourse');
+								ee.update(elem.courseModel.getCode());
+								pe.appendChild(ee);
+							}
+						});
+					});
+					
+					this.mainDiv.appendChild(e);
+				}.bind(this));
+			}.bind(this));
+		}.bind(this));
+	}
+})
+
 document.observe("dom:loaded", function () {
-	$('boxPanel').update('');
-	$('moreInfoPanel').update('');
-	$('searchResultsPanel').update('');
-	$('searchEdit').value = '';
-	
-	var cbModel = new CourseSearchResults();
-	var cb = new CourseBrowser($('searchEdit'), $('searchResultsPanel'), $('moreInfoPanel'), cbModel);
-	
-	$('searchEdit').focus();
-	
 	API.login('alex@alex.com', 'wookie', function(success) {
 		if (success) {
 			$('loginbox').update("Logged in as <b>alex@alex.com</b>&nbsp;&nbsp;");
@@ -149,6 +190,13 @@ document.observe("dom:loaded", function () {
 				console.log("testing");
 				return false;
 			});
+			
+			var cbModel = new CourseSearchResults();
+			var cb = new CourseBrowser($('searchEdit'), $('searchResultsPanel'), $('moreInfoPanel'), cbModel);
+			
+			var sb = new SemesterBrowser($('boxPanel'));
+			$('searchEdit').value = '';
+			$('searchEdit').focus();
 		}
 	});
 });

@@ -44,7 +44,7 @@ div#header div#loginbox {
 }
 
 div#nav {
-	font-size: 0.9em;
+	font-size: 0.8em;
 	float: right;
 	background: #26537c;
 	margin-top: 1px;
@@ -122,16 +122,13 @@ div.sectionhead {
 
 div.onethird {
 	float: left;
-	width: 30%;
+	width: 28%;
 	border-right: 1px dotted #bbb;
-	height: 100%;
 }
 
 div.twothirds {
-	width: 69%;
-	height: 100%;
-	float: right;
-	overflow: auto;
+	margin-left: 28%;
+	width: 71%;
 }
 
 span.caption {
@@ -140,13 +137,13 @@ span.caption {
 }
 
 div#searchResultsPanel {
-	height: 50%;
+	height: 10em;
 	overflow: auto;
 	margin-right: 15px;
+	margin-bottom: 1em;
 }
 
 div.course {
-	display: block;
 	padding: 10px;
 	background: #bf8430;
 	margin-bottom: 2px;
@@ -156,15 +153,65 @@ div.course {
 }
 
 div#moreInfoPanel {
+	font-size: 0.9em;
 	overflow: auto;
-	height: 25%;
-}
-
-div.course_hover {
-	background: 
+	height: 11em;
+	padding-right: 15px;
 }
 
 div.course span.name {
 	font-size: 0.8em;
 	margin-left: 1em;
+}
+
+div.ucourse {
+	padding: 0.25em;
+	background: #534ed9;
+	border: 2px solid #0c0874;
+	border-radius: 5px;
+	font-size: 0.8em;
+	height: 1.4em;
+	color: white;
+	float: left;
+	margin: 0.1em;
+	margin-top: 0.25em;
+	cursor: pointer;
+}
+
+div.footer {
+	clear: both;
+}
+
+div.usersemester {
+	margin: 1em;
+	padding: 0.5em;
+	border: 2px solid #ff9500;
+	border-radius: 5px;
+	height: 8em;
+}
+
+div.usersemester span.title {
+	display: block;
+	font-weight: bold;
+	font-size: 0.8em;
+	border-bottom: 1px solid #333;
+}
+
+div.planbox {
+	width: 30%;
+	background: #ffdd73;
+	border: 2px solid #a67e00;
+	border-radius: 5px;
+	height: 6em;
+	padding: 0.25em;
+	margin-top: 0.25em;
+	margin-right: 1%;
+	float: left;
+}
+
+div.planbox span.title {
+	display: block;
+	font-weight: normal;
+	font-size: 0.6em;
+	border-bottom: 1px solid #777;
 }
