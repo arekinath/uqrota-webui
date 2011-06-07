@@ -348,7 +348,8 @@ var Resource = Class.create({
 	},
 	
 	/**
-	 * Where the magic happens
+	 * Where the magic happens. This gets called when there's new JSON data
+	 * from the backend available for this object.
 	 */
 	_setData: function(data) {
 		this.data = data;
@@ -404,6 +405,7 @@ var Resource = Class.create({
 					}
 				};
 			}(r);
+			
 			// add convenience methods -- getSomethings.each, .first and .at(n)
 			var getter = this[Model._fname('get',r.attr)];
 			getter.each = function(getter) {
@@ -560,6 +562,12 @@ Resource._count = function(klass) {
 	};
 }
 
+/**
+ * Creates a Resource class. 'options' object should have at least two attributes:
+ * 'url_patterns' and 'relations'.
+ * @param options		object
+ * @param funcs			object 		OPTIONAL, extra methods to add to the class
+ */
 Resource.make = function(options, funcs) {
 	if (typeof(funcs) == 'undefined') funcs = {};
 	
@@ -568,17 +576,21 @@ Resource.make = function(options, funcs) {
 	klass.url_patterns = options.url_patterns;
 	klass.relations = options.relations;
 	
+	// if we have a resource URL, generate a getter
 	if (klass.url_patterns && klass.url_patterns.resource)
 		klass.get = Resource._get(klass);
 	else
 		klass.get = Resource._get_cache_only(klass);
 		
+	// if we have a find URL, generate a .all() function
 	if (klass.url_patterns && klass.url_patterns.find)
 		klass.all = Resource._all(klass);
 	
+	// if we have a count URL, generate a .count() function
 	if (klass.url_patterns && klass.url_patterns.count)
 		klass.count = Resource._count(klass);
 	
+	// and if they gave us a creator, generate a .create() function to use it
 	if (options.creator) {
 		klass.create = function(opts) {
 			var data = options.creator(opts);
