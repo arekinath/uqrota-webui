@@ -99,7 +99,6 @@ Model.CourseSelection = Resource.make({
 		data._keys = ['id'];
 		data.plan_box = opts.plan_box.zeroLevelData(true);
 		data.course = opts.course.zeroLevelData(true);
-		data.visible = typeof(opts.visible) != 'undefined' ? opts.visible : true;
 		return data;
 	}
 });

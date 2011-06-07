@@ -147,18 +147,45 @@ var PlanBoxView = Class.create({
 			accept: ['course', 'ucourse'],
 			hoverclass: 'hovering',
 			onDrop: function(elem) {
-				// do somethng else
-				var ee = new Element('div');
-				ee.addClassName('ucourse');
-				ee.courseModel = elem.courseModel;
-				ee.update(elem.courseModel.getCode());
-				elem.remove();
-				this.element.appendChild(ee);
+				var course = elem.courseModel;
 				
-				new Draggable(ee, { 
-					revert: 'failure'
-				});
+				if (elem.courseSelectionModel) {
+					elem.courseSelectionModel.destroy(function() {
+						this.addCourse(course);
+					}.bind(this));
+				} else {
+					console.log("calling addCourse");
+					this.addCourse(course);
+				}
+				
+				elem.remove();
 			}.bind(this)
+		});
+	},
+	
+	addCourse: function(cs) {
+		var csm = Model.CourseSelection.create({
+			plan_box: this.planBox,
+			course: cs
+		});
+		csm.save(function() {
+			this.addCourseSelection(csm);
+		}.bind(this));
+	},
+	
+	addCourseSelection: function(csm) {
+		csm.getCourse(function (course) {
+			var ee = new Element('div');
+			ee.addClassName('ucourse');
+			ee.courseModel = course;
+			ee.courseSelectionModel = csm;
+			ee.update(course.getCode());
+			elem.remove();
+			this.element.appendChild(ee);
+			
+			new Draggable(ee, { 
+				revert: 'failure'
+			});	
 		});
 	}
 });
