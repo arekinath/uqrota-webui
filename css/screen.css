@@ -1,7 +1,7 @@
 html, body {
 	font-family: Verdana, Sans-serif;
 	background: #f8f8f8;
-	height: 100%;
+	height: 99%;
 }
 
 div#content {
@@ -11,7 +11,7 @@ div#content {
 }
 
 div#header {
-	background: #1e3278;
+	background: #0c5da5;
 	color: white;
 	border: 2px solid #142150;
 	border-radius: 5px;
@@ -46,7 +46,7 @@ div#header div#loginbox {
 div#nav {
 	font-size: 0.9em;
 	float: right;
-	background: #56659a;
+	background: #26537c;
 	margin-top: 1px;
 	border: 2px solid #142150;
 	color: white;
@@ -137,4 +137,34 @@ div.twothirds {
 span.caption {
 	font-size: 0.7em;
 	font-family: Serif;
+}
+
+div#searchResultsPanel {
+	height: 50%;
+	overflow: auto;
+	margin-right: 15px;
+}
+
+div.course {
+	display: block;
+	padding: 10px;
+	background: #bf8430;
+	margin-bottom: 2px;
+	border-radius: 5px;
+	font-size: 0.8em;
+	cursor: pointer;
+}
+
+div#moreInfoPanel {
+	overflow: auto;
+	height: 25%;
+}
+
+div.course_hover {
+	background: 
+}
+
+div.course span.name {
+	font-size: 0.8em;
+	margin-left: 1em;
 }

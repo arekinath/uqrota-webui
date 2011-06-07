@@ -10,38 +10,18 @@
 
 <link rel="stylesheet" href="css/screen.css" type="text/css"/> 
 <script type="text/javascript" src="js/lib/prototype.js"></script>
+<script type="text/javascript" src="js/lib/effects.js"></script>
+<script type="text/javascript" src="js/lib/dragdrop.js"></script>
 <script type="text/javascript" src="js/model.js"></script>
 <script type="text/javascript" src="js/datamodel.js"></script>
 <script type="text/javascript" src="js/usermodel.js"></script>
-<script type="text/javascript">
-<!--
-
-/*document.observe("dom:loaded", function () {
-	console.log("testing?");
-
-	API.login('alex', 'testing', function(success) {
-		if (success)
-			console.log("logged in ok");
-			
-		Model.User.get('me', function(me) {
-			Model.Semester.get(6160, function (sem) {
-				var us = Model.UserSemester.create({ user: me, semester: sem });
-				us.save(function() {
-					console.log("saved usersemester for 6160");
-				});
-			});
-		});
-	});
-});*/
--->
-</script>
+<script type="text/javascript" src="js/coursebrowser.js"></script>
 </head>
 <body>
 	<div id="content">
 		<div id="header">
 			<div id="loginbox">
-				Logged in as <b>test@test.com</b>
-				&nbsp;&nbsp;<a href="#">Log out</a>
+				&nbsp;
 			</div>
 			<div id="leftpart">
 				UQRota <span id="tagline">(not an official UQ service!)</span>
@@ -61,12 +41,14 @@
 		<div id="main" class="stretch">
 			<div class="onethird">
 				<div class="sectionhead">COURSE BROWSER</div>
-				<p><span class="caption">Search:</span> <input type="text"/></p>
+				<p><span class="caption">Search:</span> <input type="text" id="searchEdit"/></p>
+				<div id="searchResultsPanel"></div>
 				
 				<div class="sectionhead">MORE INFO</div>
+				<div id="moreInfoPanel"></div>
 			</div>
-			<div class="twothirds">
-				test
+			<div class="twothirds" id="boxPanel">
+				Loading...
 			</div>
 		</div>
 	</div>
