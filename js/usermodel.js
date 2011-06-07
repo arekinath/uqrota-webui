@@ -89,7 +89,7 @@ Model.CourseSelection = Resource.make({
 	},
 	relations: [
 		belongs_to('plan_box'),
-		belongs_to('course'),
+		belongs_to('offering'),
 		has_n('series_selections'),
 		has_n('group_selections')
 	],
@@ -98,7 +98,7 @@ Model.CourseSelection = Resource.make({
 		data._class = 'CourseSelection';
 		data._keys = ['id'];
 		data.plan_box = opts.plan_box.zeroLevelData(true);
-		data.course = opts.course.zeroLevelData(true);
+		data.offering = opts.offering.zeroLevelData(true);
 		data.visible = typeof(opts.visible) != 'undefined' ? opts.visible : true;
 		return data;
 	}
