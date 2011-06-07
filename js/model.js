@@ -270,6 +270,7 @@ var Resource = Class.create({
 			this[Model._fname('get',r.attr)] = function(r) {
 				return function(callback) {
 					var objs = [];
+					var objos = [];
 					var pobjs = data[r.attr];
 					if (typeof(pobjs.length) == 'undefined') pobjs = [ pobjs ];
 					
@@ -284,15 +285,16 @@ var Resource = Class.create({
 						// work out identifier field name
 						var idf = pobj._keys[0];
 								
-						Model[pobj['_class']].get(pobj[idf], function(obj) {
+						Model[pobj['_class']].get(pobj[idf], function(j) { return function(obj) {
 							objs[objs.length] = obj;
+							objos[j] = obj;
 							if (objs.length == pobjs.length) {
 								if (r.type == 'belongs_to')
 									callback(objs[0]);
 								else
-									callback(objs);
+									callback(objos);
 							}
-						});
+						}; }(j));
 					}
 				};
 			}(r);
