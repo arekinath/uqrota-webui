@@ -215,3 +215,8 @@ div.planbox span.title {
 	font-size: 0.6em;
 	border-bottom: 1px solid #777;
 }
+
+div.planbox.hovering {
+	border: 2px solid #d6ae00;
+	background: #fff090;
+}

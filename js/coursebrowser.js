@@ -128,14 +128,60 @@ var CourseBrowser = Class.create({
 	}
 });
 
+var PlanBoxView = Class.create({
+	initialize: function(planBox, elem) {
+		this.element = elem;
+		this.planBox = planBox;
+		
+		this.update();
+	},
+	
+	update: function() {
+		this.element.update('');
+		var petitle = new Element('span');
+		petitle.addClassName('title');
+		petitle.update(this.planBox.getTitle());
+		this.element.appendChild(petitle);
+		
+		Droppables.add(this.element, {
+			accept: ['course', 'ucourse'],
+			hoverclass: 'hovering',
+			onDrop: function(elem) {
+				// do somethng else
+				var ee = new Element('div');
+				ee.addClassName('ucourse');
+				ee.courseModel = elem.courseModel;
+				ee.update(elem.courseModel.getCode());
+				elem.remove();
+				this.element.appendChild(ee);
+				
+				new Draggable(ee, { 
+					revert: 'failure'
+				});
+			}.bind(this)
+		});
+	}
+});
+
 var SemesterBrowser = Class.create({
-	initialize: function(mainDiv) {
+	initialize: function(mainDiv, trashDiv) {
 		this.mainDiv = mainDiv;
+		this.trashDiv = trashDiv;
 		this.update();
 	},
 	
 	update: function() {
 		this.mainDiv.update('');
+		
+		Droppables.add(this.trashDiv, {
+			accept: ['ucourse'],
+			onHover: function(elem) {
+			},
+			onDrop: function(elem) {
+				elem.remove();
+			}
+		});
+		
 		Model.User.get('me', function(me) {
 			me.getUserSemesters.each(function(usem) {
 				usem.getSemester(function(sem) {
@@ -150,28 +196,9 @@ var SemesterBrowser = Class.create({
 					usem.getPlanBoxes.each(function(pbox) {
 						var pe = new Element('div');
 						pe.addClassName('planbox');
-						var petitle = new Element('span');
-						petitle.addClassName('title');
-						petitle.update(pbox.getTitle());
-						pe.appendChild(petitle);
 						e.appendChild(pe);
 						
-						Droppables.add(pe, {
-							accept: ['course', 'ucourse'],
-							onHover: function(elem) {
-								// do something
-							},
-							onDrop: function(elem) {
-								// do somethng else
-								var ee = new Element('div');
-								ee.addClassName('ucourse');
-								ee.courseModel = elem.courseModel;
-								ee.update(elem.courseModel.getCode());
-								pe.appendChild(ee);
-								
-								new Draggable(ee, { revert: 'failure' });
-							}
-						});
+						new PlanBoxView(pbox, pe);
 					});
 					
 					this.mainDiv.appendChild(e);
@@ -197,7 +224,7 @@ document.observe("dom:loaded", function () {
 			var cbModel = new CourseSearchResults();
 			var cb = new CourseBrowser($('searchEdit'), $('searchResultsPanel'), $('moreInfoPanel'), cbModel);
 			
-			var sb = new SemesterBrowser($('boxPanel'));
+			var sb = new SemesterBrowser($('boxPanel'), $('main'));
 			$('searchEdit').value = '';
 			$('searchEdit').focus();
 		}
