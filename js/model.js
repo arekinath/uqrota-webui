@@ -71,6 +71,24 @@ API.login = function(email, pass, callback) {
 }
 
 /**
+ * Logs out of the API backend
+ * @param callback		function()
+ */
+API.logout = function(callback) {
+	new Ajax.Request('/user/logout.json', {
+		method: 'post',
+		onSuccess: function(t) {
+			if (t.responseJSON.success) {
+				API.secret = null;
+				Model.User.cache.me = undefined;
+				if (callback)
+					callback();
+			}
+		}
+	});
+}
+
+/**
  * Attempts to register as a new user and create a session
  * as the new login.
  * @param email			string

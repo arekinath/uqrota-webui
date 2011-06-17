@@ -552,21 +552,11 @@ var SemesterBrowser = Class.create({
 })
 
 document.observe("dom:loaded", function () {
-	MoreInfoPanel.instance = new MoreInfoPanel($('moreInfoPanel'));
-	
-	API.login('alex@alex.com', 'wookie', function(success) {
-		if (success) {
-			$('loginbox').update("Logged in as <b>alex@alex.com</b>&nbsp;&nbsp;");
-			var logoutLink = new Element('a', {'href': '#'});
-			logoutLink.addClassName('bluebutton');
-			logoutLink.update("Log out");
-			$('loginbox').appendChild(logoutLink);
-			logoutLink.observe('click', function() {
-				// do something here
-				console.log("testing");
-				return false;
-			});
-			
+	API.checkLogin(function (status) {
+		if (!status) {
+			window.location.href = '/index.html';
+		} else {
+			MoreInfoPanel.instance = new MoreInfoPanel($('moreInfoPanel'));
 			var cbModel = new CourseSearchResults();
 			var cb = new CourseBrowser($('searchEdit'), $('searchResultsPanel'), cbModel);
 			
