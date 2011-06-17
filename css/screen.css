@@ -32,12 +32,18 @@ div#header span#tagline {
 	font-size: 0.4em;
 }
 
-div#header a {
+a.bluebutton {
 	background: #4e85c3 url('/images/blue_gradient.png');
 	color: white;
 	text-decoration: none;
 	border-radius: 5px;
 	padding: 5px;
+	padding-left: 7px;
+	padding-right: 7px;
+}
+
+a.bluebutton:hover {
+	background: #4e85c3;
 }
 
 div#header div#loginbox {
@@ -104,15 +110,10 @@ div#tabs a.active {
 }
 
 div#main {
-	/*border: 2px solid #555;*/
 	border-top: none;
 	padding: 1em;
 	background: white url('/images/whitefog.png');
 	margin-bottom: 0px;
-}
-
-div#main.stretch {
-	height: 60%;
 }
 
 div.sectionhead {
@@ -140,7 +141,7 @@ span.caption {
 }
 
 div#searchResultsPanel {
-	height: 10em;
+	height: 14em;
 	overflow: auto;
 	margin-right: 15px;
 	margin-bottom: 1em;
@@ -157,10 +158,10 @@ div.course {
 }
 
 div#moreInfoPanel {
-	font-size: 0.9em;
-	overflow: auto;
-	height: 11em;
+	font-size: 0.8em;
 	padding-right: 15px;
+	overflow: auto;
+	max-height: 15em;
 }
 
 div.course span.name {
@@ -201,18 +202,23 @@ div#page-foot a {
 
 div.usersemester {
 	margin: 1em;
+	float: left;
+	width: 90%;
 	background: #444;
 	color: white;
 	padding: 0.5em;
 	border: 2px solid #555;
-	height: 8em;
 }
 
 div.usersemester span.title {
 	display: block;
 	font-weight: bold;
 	font-size: 0.8em;
-	border-bottom: 1px solid white;
+	height: 1.8em;
+}
+
+div.usersemester span.title a {
+	margin-left: 1.5em;
 }
 
 div.planbox {

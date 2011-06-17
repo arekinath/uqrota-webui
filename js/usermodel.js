@@ -55,8 +55,7 @@ Model.PlanBox = Resource.make({
 		data._class = 'PlanBox';
 		data._keys = ['id'];
 		data.title = opts.title;
-		data.user = opts.user.zeroLevelData(true);
-		data.semester = opts.semester.zeroLevelData(true);
+		data.user_semester = opts.user_semester.zeroLevelData(true);
 		data.courses = [];
 		data.timetables = [];
 		return data;

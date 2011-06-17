@@ -342,11 +342,18 @@ var UserSemesterView = Class.create({
 	 * @param model		Model.UserSemester
 	 * @param elem		element				element to fill
 	 */
-	initialize: function(model, elem) {
+	initialize: function(sb, model, elem) {
+		this.browser = sb;
 		this.model = model;
 		this.element = elem;
 		
 		this.update();
+	},
+	
+	remove: function() {
+		this.model.destroy(function() {
+			this.element.remove();
+		}.bind(this));
 	},
 	
 	/**
@@ -359,14 +366,73 @@ var UserSemesterView = Class.create({
 			var tsp = new Element('span');
 			tsp.addClassName('title');
 			tsp.update(sem.getName());
+			
+			var ttLink = new Element('a', { href: '#' });
+			ttLink.addClassName('bluebutton');
+			ttLink.update('Timetable');
+			tsp.appendChild(ttLink);
+			
+			var asLink = new Element('a', { href: '#' });
+			asLink.addClassName('bluebutton');
+			asLink.update('Assessment');
+			tsp.appendChild(asLink);
+			
+			var remLink = new Element('a', { href: '#' });
+			remLink.addClassName('bluebutton');
+			remLink.update('X');
+			tsp.appendChild(remLink);
+			
+			remLink.observe('click', function(evt) {
+				evt.stop();
+				this.remove();
+			}.bind(this));
+			
 			this.element.appendChild(tsp);
 			
-			this.model.getPlanBoxes.each(function(pbox) {
-				var pe = new Element('div');
-				pe.addClassName('planbox');
-				this.element.appendChild(pe);
+			this.model.getPlanBoxes(function(pboxes) {
+				for (var i = 0; i < pboxes.length; i++) {
+					var pe = new Element('div');
+					pe.addClassName('planbox');
+					this.element.appendChild(pe);
 				
-				new PlanBoxView(pbox, pe);
+					new PlanBoxView(pboxes[i], pe);
+				}
+				
+				if (pboxes.length == 0) {
+					var createLink = new Element('a', { href: '#' });
+					createLink.addClassName('bluebutton');
+					createLink.update('Plan this semester');
+					tsp.appendChild(createLink);
+					
+					createLink.observe('click', function(evt) {
+						evt.stop();
+						
+						this.model.save(function() {
+							var pbHave = Model.PlanBox.create({ user_semester: this.model, title: 'Have to do' });
+							pbHave.save(function() {
+								var pbWant = Model.PlanBox.create({ user_semester: this.model, title: 'Want to do' });
+								pbWant.save(function() {
+									var pbMaybe = Model.PlanBox.create({ user_semester: this.model, title: 'Maybe' });
+									pbMaybe.save(function() {
+										this.model.refresh(function() {
+											this.update();
+										}.bind(this));
+									}.bind(this));
+								}.bind(this));
+							}.bind(this));
+						}.bind(this));
+						
+						createLink.remove();
+						if (this.browser.usems.indexOf(this.model) == 0)
+							this.browser.addBlank('up');
+						else if (this.browser.usems.indexOf(this.model) == this.browser.usems.length - 1)
+							this.browser.addBlank('down');
+					}.bind(this));
+					
+					ttLink.remove();
+					asLink.remove();
+					remLink.remove();
+				}
 			}.bind(this));
 		}.bind(this));
 	}
@@ -386,7 +452,35 @@ var SemesterBrowser = Class.create({
  	initialize: function(mainDiv, trashDiv) {
 		this.mainDiv = mainDiv;
 		this.trashDiv = trashDiv;
+		this.usems = [];
 		this.update();
+	},
+	
+	addBlank: function(dir, cb) {
+		if (dir == 'up') {
+			console.log('going up');
+			Model.User.get('me', function(me) {
+				this.usems[0].getSemester(function(sem) {
+					sem.getPred(function(ssem) {
+						var usem = Model.UserSemester.create({ "user": me, "semester": ssem });
+						this.addUserSemester(usem, 'top');
+						if (cb)
+							cb();
+					}.bind(this));
+				}.bind(this));
+			}.bind(this));
+		} else if (dir == 'down') {
+			Model.User.get('me', function(me) {
+				this.usems[this.usems.length-1].getSemester(function(sem) {
+					sem.getSucc(function(ssem) {
+						var usem = Model.UserSemester.create({ "user": me, "semester": ssem });
+						this.addUserSemester(usem, 'bottom');
+						if (cb)
+							cb();
+					}.bind(this));
+				}.bind(this));
+			}.bind(this));
+		}
 	},
 	
 	/**
@@ -406,8 +500,28 @@ var SemesterBrowser = Class.create({
 		});
 		
 		Model.User.get('me', function(me) {
-			me.getUserSemesters.each(function(usem) {
-				this.addUserSemester(usem);
+			me.getUserSemesters(function(usems) {
+				if (usems.length == 0) {
+					Model.Semester.get('current', function(sem) {
+						var usem = Model.UserSemester.create({ "user": me, "semester": sem });
+						this.addUserSemester(usem);
+						
+						this.addBlank('up', function() {
+							this.addBlank('down', function() {
+								this.addBlank('down');
+							}.bind(this));
+						}.bind(this));						
+					}.bind(this));				
+				} else {
+					for (var i = 0; i < usems.length; i++) {
+						this.addUserSemester(usems[i]);
+					}
+					this.addBlank('up', function() {
+						this.addBlank('down', function() {
+							this.addBlank('down');
+						}.bind(this));
+					}.bind(this));
+				}
 			}.bind(this));
 		}.bind(this));
 	},
@@ -416,12 +530,24 @@ var SemesterBrowser = Class.create({
 	 * Takes a UserSemester object and adds a representation of it to the view
 	 * @param usem		Model.UserSemester
 	 */
-	addUserSemester: function(usem) {
+	addUserSemester: function(usem, place) {
 		var e = new Element('div');
 		e.addClassName('usersemester');
-		this.mainDiv.appendChild(e);
+		if (typeof(place) == 'undefined') {
+			this.mainDiv.appendChild(e);
+			this.usems.push(usem);
+		} else {
+			var insh = {};
+			insh[place] = e;
+			this.mainDiv.insert(insh);
+			
+			if (place == 'top')
+				this.usems.unshift(usem);
+			else
+				this.usems.push(usem);
+		}
 		
-		new UserSemesterView(usem, e);
+		new UserSemesterView(this, usem, e);
 	}
 })
 
@@ -432,6 +558,7 @@ document.observe("dom:loaded", function () {
 		if (success) {
 			$('loginbox').update("Logged in as <b>alex@alex.com</b>&nbsp;&nbsp;");
 			var logoutLink = new Element('a', {'href': '#'});
+			logoutLink.addClassName('bluebutton');
 			logoutLink.update("Log out");
 			$('loginbox').appendChild(logoutLink);
 			logoutLink.observe('click', function() {
