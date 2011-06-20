@@ -552,6 +552,16 @@ var SemesterBrowser = Class.create({
 })
 
 document.observe("dom:loaded", function () {
+	
+	var coff = $('leftcolumn').cumulativeOffset();
+	document.observe('scroll', function(evt) {
+		var so = document.viewport.getScrollOffsets();
+		if (so.top >= coff.top)
+			$('leftcolumn').style.top = (so.top - coff.top + 10) + 'px';
+		else
+			$('leftcolumn').style.top = '0px';
+	});
+	
 	API.checkLogin(function (status) {
 		if (!status) {
 			window.location.href = '/index.html';

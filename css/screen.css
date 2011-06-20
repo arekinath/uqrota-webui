@@ -158,6 +158,7 @@ div.sectionhead {
 
 div.onethird {
 	float: left;
+	position: relative;
 	width: 28%;
 	border-right: 1px dotted #bbb;
 }
