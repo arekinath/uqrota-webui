@@ -2,7 +2,6 @@
 //= require <CourseSearchResults>
 //= require <CourseBrowser>
 //= require <API>
-//= require <DataModel>
 //= require <SemesterBrowser>
 
 document.observe("dom:loaded", function () {

@@ -1,7 +1,13 @@
 //= require <prototype>
 //= require <effects>
 //= require <dragdrop>
-//= require <UserModel>
+
+//= require <model/Course>
+//= require <model/User>
+//= require <model/UserSemester>
+//= require <model/PlanBox>
+//= require <model/CourseSelection>
+
 //= require <MoreInfoPanel>
 
 /**

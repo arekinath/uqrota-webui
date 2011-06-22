@@ -1,6 +1,6 @@
 //= require <prototype>
 //= require <API>
-//= require <UserModel>
+//= require <model/User>
 
 var LoginBoxView = Class.create({
 	initialize: function(div) {

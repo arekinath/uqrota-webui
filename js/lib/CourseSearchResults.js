@@ -1,5 +1,5 @@
 //= require <prototype>
-//= require <DataModel>
+//= require <model/Course>
 
 /**
  * Model for search results used by the course browser.

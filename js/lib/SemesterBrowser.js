@@ -1,5 +1,9 @@
 //= require <UserSemesterView>
-//= require <UserModel>
+
+//= require <model/User>
+//= require <model/UserSemester>
+//= require <model/Semester>
+
 //= require <effects>
 //= require <dragdrop>
 
