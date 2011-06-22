@@ -3,8 +3,11 @@
 //= require <CourseBrowser>
 //= require <API>
 //= require <SemesterBrowser>
+//= require <LoginBoxView>
 
 document.observe("dom:loaded", function () {
+	var lbv = new LoginBoxView($('loginbox'));	
+	
 	var coff = $('leftcolumn').cumulativeOffset();
 	document.observe('scroll', function(evt) {
 		var so = document.viewport.getScrollOffsets();
