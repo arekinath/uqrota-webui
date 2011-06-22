@@ -23,9 +23,15 @@ task :build do
 end
 
 task :clean do
-  minjs = Dir.glob("./js/src/*.js")
-  minjs.each do |jsf|
+  js = Dir.glob("./js/src/*.js")
+  js.each do |jsf|
     jsf = "js/#{File.basename(jsf)}"
+    puts "rm -f #{jsf}"
+    `rm -f #{jsf}`
+  end
+  
+  minjs = Dir.glob("./js/*.min.js")
+  minjs.each do |jsf|
     puts "rm -f #{jsf}"
     `rm -f #{jsf}`
   end
