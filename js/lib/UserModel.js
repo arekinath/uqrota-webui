@@ -1,6 +1,7 @@
 //= require <Resource>
 //= require <Model>
 //= require <DataModel>
+//= require <API>
 
 Model.User = Resource.make({
 	url_patterns: {
