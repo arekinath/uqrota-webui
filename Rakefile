@@ -18,7 +18,7 @@ task :build do
     
     jscf = jsf.gsub(".js", ".min.js")
     puts "[COMPRESS] #{jsf}"
-    puts `yuicompressor #{jsf} -o #{jsf}`
+    puts `yuicompressor #{jsf} -o #{jscf}`
   end
 end
 
