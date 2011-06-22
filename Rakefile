@@ -11,7 +11,8 @@ task :build do
       :load_path => ["js/lib/prototype/src", "js/lib/scriptaculous/src", "js/lib"],
       :source_files => [jsf]
     )
-    secretary.save_to("js/#{File.basename(jsf)}")
+    cc = secretary.concatenation
+    cc.save_to("js/#{File.basename(jsf)}")
     
     jscf = jsf.gsub(".js", ".min.js")
     puts "[COMPRESS] #{jsf}"
