@@ -33,6 +33,7 @@ var API = {};
 API.checkLogin = function(callback) {
 	new Ajax.Request('/user/login.json', {
 		method: 'get',
+		evalJSON: 'force',
 		onSuccess: function(t) {
 			if (t.responseJSON.logged_in) {
 				API.secret = t.responseJSON.secret;
@@ -57,6 +58,7 @@ API.checkLogin = function(callback) {
 API.login = function(email, pass, callback) {
 	new Ajax.Request('/user/login.json', {
 		method: 'post',
+		evalJSON: 'force',
 		parameters: { "email": email, "password": pass },
 		onSuccess: function(t) {
 			if (t.responseJSON.success) {
@@ -77,6 +79,7 @@ API.login = function(email, pass, callback) {
 API.logout = function(callback) {
 	new Ajax.Request('/user/logout.json', {
 		method: 'post',
+		evalJSON: 'force',
 		onSuccess: function(t) {
 			if (t.responseJSON.success) {
 				API.secret = null;
@@ -98,6 +101,7 @@ API.logout = function(callback) {
 API.register = function(email, pass, callback) {
 	new Ajax.Request('/user/me.json', {
 		method: 'put',
+		evalJSON: 'force',
 		parameters: { "user[email]": email, "user[password]": pass },
 		onSuccess: function(t) {
 			if (t.responseJSON.success) {
@@ -182,6 +186,7 @@ var Resource = Class.create({
 	refresh: function(callback) {
 		new Ajax.Request(this._resourceUrl(), {
 			method: 'get',
+			evalJSON: 'force',
 			requestHeaders: {"X-Api-Secret": API.secret},
 			onSuccess: function(t) {
 				this._setData(t.responseJSON);
@@ -198,6 +203,7 @@ var Resource = Class.create({
 	destroy: function(callback) {
 		new Ajax.Request(this._resourceUrl(), {
 			method: 'delete',
+			evalJSON: 'force',
 			requestHeaders: {"X-Api-Secret": API.secret},
 			onSuccess: function(t) {
 				this.constructor.cache[this._id()] = undefined;
@@ -341,6 +347,7 @@ var Resource = Class.create({
 		if (this.isNew) {
 			new Ajax.Request(this._createUrl(), {
 				method: 'put',
+				evalJSON: 'force',
 				requestHeaders: {"X-Api-Secret": API.secret},
 				parameters: params,
 				onSuccess: function(t) {
@@ -354,6 +361,7 @@ var Resource = Class.create({
 		} else {
 			new Ajax.Request(this._resourceUrl(), {
 				method: 'post',
+				evalJSON: 'force',
 				requestHeaders: {"X-Api-Secret": API.secret},
 				parameters: params,
 				onSuccess: function(t) {
@@ -507,6 +515,7 @@ Resource._get = function(klass) {
 		} else {
 			new Ajax.Request(klass.url_patterns.resource.format(id), {
 				method: 'get',
+				evalJSON: 'force',
 				requestHeaders: {"X-Api-Secret": API.secret},
 				onSuccess: function(r) {
 					var o = new klass();
@@ -543,6 +552,7 @@ Resource._all = function(klass) {
 	return function(conditions, callback) {
 		new Ajax.Request(klass.url_patterns.find, {
 			method: 'get',
+			evalJSON: 'force',
 			parameters: { "with": Object.toJSON(conditions) },
 			requestHeaders: {"X-Api-Secret": API.secret},
 			onSuccess: function(t) {
@@ -571,6 +581,7 @@ Resource._count = function(klass) {
 	return function(conditions, callback) {
 		new Ajax.Request(klass.url_patterns.count, {
 			method: 'get',
+			evalJSON: 'force',
 			requestHeaders: {"X-Api-Secret": API.secret},
 			parameters: { "with": conditions.toJSON() },
 			onSuccess: function(t) {
