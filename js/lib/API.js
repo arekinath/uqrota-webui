@@ -118,6 +118,9 @@ API.register = function(email, pass, token, callback) {
 			} else {
 				callback(false);
 			}
+		},
+		onFailure: function(t) {
+			callback(false);
 		}
 	});
 }

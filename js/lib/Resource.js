@@ -501,7 +501,7 @@ Resource._count = function(klass) {
 			method: 'get',
 			evalJSON: 'force',
 			requestHeaders: {"X-Api-Secret": API.secret},
-			parameters: { "with": conditions.toJSON() },
+			parameters: { "with": Object.toJSON(conditions) },
 			onSuccess: function(t) {
 				callback(t.responseJSON.count);
 			}
