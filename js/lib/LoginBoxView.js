@@ -1,3 +1,6 @@
+//= require <prototype>
+//= require <API>
+//= require <UserModel>
 
 var LoginBoxView = Class.create({
 	initialize: function(div) {
@@ -79,8 +82,4 @@ var LoginBoxView = Class.create({
 			}
 		}.bind(this));
 	}
-});
-
-document.observe("dom:loaded", function () {
-	var lbv = new LoginBoxView($('loginbox'));	
 });
