@@ -1,6 +1,6 @@
-/**
- * @author Alex Wilson
- */
+//= require <Resource>
+//= require <Model>
+//= require <DataModel>
 
 Model.User = Resource.make({
 	url_patterns: {

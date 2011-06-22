@@ -1,6 +1,5 @@
-/**
- * @author Alex Wilson
- */
+//= require <Resource>
+//= require <Model>
 
 Model.Semester = Resource.make({
 	url_patterns: {
