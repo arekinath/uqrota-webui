@@ -13,15 +13,18 @@ String.prototype.format = function() {
 };
 
 /**
- * Identifies an array.
- * @param obj		object
- * @return true if obj is an array
- */
+ * isArray(obj) -> bool
+ * - obj: any object
+ * 
+ * Identifies an array. Returns true if the object in question is an array.
+ **/
 function isArray(obj) {
 	return obj.constructor.toString().indexOf(' Array()') >= 0;
 }
 
 /**
+ * class Resource
+ * 
  * Utility mix-in for classes that act as a 'model-proxy' -- these emulate
  * the semantics of the DataMapper API in the backend for the use of frontend
  * Javascript code.
@@ -37,37 +40,40 @@ function isArray(obj) {
  * attributes of the instance, as well as their relationships. Implementing
  * classes get a very simple API to specify this behaviour -- datamodel.js and
  * usermodel.js have a lot of examples of this. 
- */
+ **/
 var Resource = Class.create({
+	
 	initialize: function() {
 		this.data = {};
 	},
 	
-	/**
+	/*
 	 * Retrieves my "resource" URL -- used for get, post and delete.
 	 */
 	_resourceUrl: function() {
 		return this.constructor.url_patterns.resource.format(this._id());
 	},
 	
-	/**
+	/*
 	 * Retrieves my "create" URL -- used for a PUT to create a new resource
 	 */
 	_createUrl: function() {
 		return this.constructor.url_patterns.create;
 	},
 	
-	/**
+	/*
 	 * Gets my unique identifier
 	 */
 	_id: function() {
 		return this.data[this.data._keys[0]];
 	},
 	
-	/**
-	 * Request this resource from the database again and refresh its attributes.
-	 * @param callback		function()
-	 */
+/**
+ * Resource#refresh([callback]) -> null
+ * - callback (function())
+ * 
+ * Request this resource from the database again and refresh its attributes.
+ **/
 	refresh: function(callback) {
 		new Ajax.Request(this._resourceUrl(), {
 			method: 'get',
@@ -81,10 +87,12 @@ var Resource = Class.create({
 		});
 	},
 	
-	/**
-	 * Commands the backend to destroy this instance in the database.
-	 * @param callback		function()
-	 */
+/**
+ * Resource#destroy([callback]) -> null
+ * - callback (function())
+ * 
+ * Commands the backend to destroy this instance in the database.
+ **/
 	destroy: function(callback) {
 		new Ajax.Request(this._resourceUrl(), {
 			method: 'delete',
@@ -97,11 +105,13 @@ var Resource = Class.create({
 		});
 	},
 	
-	/**
-	 * Returns an object with the smallest possible set of attributes
-	 * which still uniquely identifies this instance.
-	 * @param inclClass		bool		include meta-attributes _class and _keys
-	 */
+/**
+ * Resource#zeroLevelData(inclClass) -> object
+ * - inclClass (bool): include meta-attributes _class and _keys
+ * 
+ * Returns an object with the smallest possible set of attributes
+ * which still uniquely identifies this instance.
+ **/
 	zeroLevelData: function(inclClass) {
 		var zld = {};
 		for (var i = 0; i < this.data._keys.length; i++) {
@@ -122,11 +132,13 @@ var Resource = Class.create({
 		return zld;
 	},
 	
-	/**
-	 * Returns an object with all the standard attributes of this
-	 * instance, but no relationships.
-	 * @param inclClass		bool		include meta-attributes _class and _keys
-	 */
+/**
+ * Resource#firstLevelData(inclClass) -> object
+ * - inclClass (bool): include meta-attributes _class and _keys
+ * 
+ * Returns an object with all the standard attributes of this
+ * instance, but no relationships.
+ **/
 	firstLevelData: function(inclClass) {
 		var zld = {};
 		for (x in this.data) {
@@ -141,10 +153,11 @@ var Resource = Class.create({
 		return zld;
 	},
 	
-	/**
+	/*
+	 * Resource#_saveData() -> object
+	 * 
 	 * Returns this object as a set of query parameters ready to be sent
 	 * in a POST request.
-	 * @return object
 	 */
 	_saveData: function() {
 		var params = {};
@@ -171,7 +184,7 @@ var Resource = Class.create({
 		return params;
 	},
 	
-	/**
+	/*
 	 * Turns a collection into a format suitable for query parameters.
 	 */
 	_collectionToParams: function(collection, name) {
@@ -188,7 +201,7 @@ var Resource = Class.create({
 		return params;
 	},
 	
-	/**
+	/*
 	 * Forces the 'parents' of this resource (those to whom this resource
 	 * 	has belongs_to relationships) to be reloaded.
 	 */
@@ -221,11 +234,14 @@ var Resource = Class.create({
 		}
 	},
 	
-	/**
-	 * Commits any changes in this resource's state into the backend. If
-	 * the resource is new, this will perform the necessary steps to create
-	 * it.
-	 */
+/**
+ * Resource#save([callback]) -> null
+ * - callback (function())
+ * 
+ * Commits any changes in this resource's state into the backend. If
+ * the resource is new, this will perform the necessary steps to create
+ * it.
+ **/
 	save: function(callback) {
 		var params = this._saveData();
 		
@@ -258,7 +274,7 @@ var Resource = Class.create({
 		}
 	},
 	
-	/**
+	/*
 	 * Where the magic happens. This gets called when there's new JSON data
 	 * from the backend available for this object.
 	 */
@@ -391,6 +407,15 @@ var Resource = Class.create({
 });
 
 /**
+ * Resource.get(id, callback) -> null
+ * - id (any type): unique identifier of the object to be retrieved
+ * - callback (function(Resource))
+ * 
+ * Retrieves a resource from the database and calls the callback with it
+ * as its parameter when ready.
+ **/
+
+/*
  * Creates a standard getter for the given class
  */
 Resource._get = function(klass) {
@@ -416,7 +441,7 @@ Resource._get = function(klass) {
 	};
 }
 
-/**
+/*
  * Creates a getter that only checks the class cache
  * Used for inline-loaded relationships (.full == true)
  */
@@ -430,6 +455,14 @@ Resource._get_cache_only = function(klass) {
 }
 
 /**
+ * Resource.all(conditions, callback) -> null
+ * - conditions (object): search query to send to backend
+ * - callback (function(array(Resource)))
+ * 
+ * Retrieves an array of all matching resources from the backend.
+ **/
+
+/*
  * Creates a 'find' function to retrieve all instances of
  * a class that meet certain criteria.
  */
@@ -477,11 +510,20 @@ Resource._count = function(klass) {
 }
 
 /**
+ * Resource.create(options) -> Resource
+ * - options (object): initial attributes for the object
+ * 
+ * Creates a new Resource instance. Call Resource#save() to store it in the database.
+ **/
+
+/**
+ * Resource.make(options[, funcs]) -> klass
+ * 
  * Creates a Resource class. 'options' object should have at least two attributes:
  * 'url_patterns' and 'relations'.
- * @param options		object
- * @param funcs			object 		OPTIONAL, extra methods to add to the class
- */
+ * 
+ * 'relations' should be filled with objects made by belongs_to() and has_n() 
+ **/
 Resource.make = function(options, funcs) {
 	if (typeof(funcs) == 'undefined') funcs = {};
 	
@@ -518,11 +560,25 @@ Resource.make = function(options, funcs) {
 	return klass;
 }
 
+/**
+ * Resource.belongs_to(attr, immediate) -> attrobject
+ * - attr (string): name of the attribute in JSON that contains this relationship
+ * - immediate (bool): if true, expect that the entirety of the parent's data is embedded in the attribute
+ * 
+ * Creates a 'belongs-to' relationship for use with Resource.make()
+ **/
 var belongs_to = function(attr, idf) {
 	var full = typeof(idf) != 'undefined' ? true : false;
 	return { "attr": attr, "full": full, "idf": idf, "type": 'belongs_to' };
 }
 
+/**
+ * Resource.has_n(attr, immediate) -> attrobject
+ * - attr (string): name of the attribute in JSON that contains this relationship
+ * - immediate (bool): if true, expect that the entirety of the children's data is embedded in the attribute
+ * 
+ * Creates a 'has-N' relationship for use with Resource.make()
+ **/
 var has_n = function(attr, idf) {
 	var full = typeof(idf) != 'undefined' ? true : false;
 	return { "attr": attr, "full": full, "idf": idf, "type": 'has_n' };
