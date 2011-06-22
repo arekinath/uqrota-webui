@@ -1,13 +1,21 @@
 require 'rubygems'
+require 'sprockets'
 
-task :compress do
-  js = `find ./js -iname '*.js'`
+task :build do
+  
+  
+  js = `find ./js/src -iname '*.js'`
   js.split("\n").each do |jsf|
-    unless jsf.end_with?('.min.js')
-      jscf = jsf.gsub(".js", ".min.js")
-      puts "[COMPRESS #{jsf}]"
-      puts `yuicompressor #{jsf} -o #{jscf}`
-    end
+    puts "[SPROCKET] #{jsf}"
+    secretary = Sprockets::Secretary.new(
+      :load_path => ["js/lib/prototype/src", "js/lib/scriptaculous/src", "js/lib"],
+      :source_files => [jsf]
+    )
+    secretary.save_to("js/#{File.basename(jsf)}")
+    
+    jscf = jsf.gsub(".js", ".min.js")
+    puts "[COMPRESS] #{jsf}"
+    puts `yuicompressor #{jsf} -o #{jscf}`
   end
 end
 
