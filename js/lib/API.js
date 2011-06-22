@@ -2,15 +2,18 @@
 //= require <Model>
 
 /**
+ * API
  * Auxiliary namespace for API utilities like login management
- */
+ **/
 var API = {};
 
 /**
+ * API.checkLogin([callback]) -> null
+ * - callback (function(bool))
+ * 
  * Checks if we are currently logged in, and gets the session's API secret
  * if we don't already know it.
- * @param callback		function(bool logged_in)
- */
+ **/
 API.checkLogin = function(callback) {
 	new Ajax.Request('/user/login.json', {
 		method: 'get',
@@ -31,11 +34,13 @@ API.checkLogin = function(callback) {
 }
 
 /**
+ * API.login(email, pass[, callback]) -> null
+ * - email (string)
+ * - pass (string)
+ * - callback (function(bool))
+ * 
  * Attempts to log in with the email and password given.
- * @param email			string
- * @param pass			string
- * @param callback		function(bool success)
- */
+ **/
 API.login = function(email, pass, callback) {
 	new Ajax.Request('/user/login.json', {
 		method: 'post',
@@ -54,9 +59,11 @@ API.login = function(email, pass, callback) {
 }
 
 /**
+ * API.logout([callback]) -> null
+ * - callback (function())
+ * 
  * Logs out of the API backend
- * @param callback		function()
- */
+ **/
 API.logout = function(callback) {
 	new Ajax.Request('/user/logout.json', {
 		method: 'post',
@@ -73,12 +80,14 @@ API.logout = function(callback) {
 }
 
 /**
+ * API.register(email, pass[, callback]) -> null
+ * - email (string)
+ * - pass (string)
+ * - callback (function(bool))
+ * 
  * Attempts to register as a new user and create a session
  * as the new login.
- * @param email			string
- * @param pass			string
- * @param callback		function(bool success)
- */
+ **/
 API.register = function(email, pass, callback) {
 	new Ajax.Request('/user/me.json', {
 		method: 'put',
