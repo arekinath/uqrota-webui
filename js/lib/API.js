@@ -72,7 +72,7 @@ API.checkLogin = function(callback) {
  * 
  * Attempts to log in with the email and password given.
  **/
-API.login = function(email, pass) {
+API.login = function(email, pass, callback) {
 	new Ajax.Request('/user/login.json', {
 		method: 'post',
 		evalJSON: 'force',
@@ -81,8 +81,12 @@ API.login = function(email, pass) {
 			if (t.responseJSON.success) {
 				API.secret = t.responseJSON.secret;
 				Model.User.cache.me = undefined;
+				if (callback)
+					callback(true);
 				API._call('status', true);
 			} else {
+				if (callback)
+					callback(false);
 				API._call('status', false);
 			}
 		}
@@ -95,7 +99,7 @@ API.login = function(email, pass) {
  * 
  * Logs out of the API backend
  **/
-API.logout = function() {
+API.logout = function(callback) {
 	new Ajax.Request('/user/logout.json', {
 		method: 'post',
 		evalJSON: 'force',
@@ -103,6 +107,8 @@ API.logout = function() {
 			if (t.responseJSON.success) {
 				API.secret = null;
 				Model.User.cache.me = undefined;
+				if (callback)
+					callback();
 				API._call('status', false);
 			}
 		}

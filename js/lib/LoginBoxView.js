@@ -27,7 +27,7 @@ var LoginBoxView = Class.create({
 			this.logoutLink = new Element('a', {'href': '#'});
 			this.logoutLink.addClassName('bluebutton');
 			this.logoutLink.update("Log out");
-			this.elem.appendChild(logoutLink);
+			this.elem.appendChild(this.logoutLink);
 			this.logoutLink.observe('click', function(evt) {
 				evt.stop();
 				this.controller.logout();
@@ -49,6 +49,8 @@ var LoginBoxView = Class.create({
 		lbox.appendChild(this.passwordEdit);
 		lbox.insert('&nbsp;');
 		lbox.appendChild(this.loginBtn);
+		
+		this.emailEdit.activate();
 				
 		this.emailEdit.observe('focus', function(evt) {
 			if (this.emailEdit.value == 'email')

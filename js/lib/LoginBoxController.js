@@ -10,7 +10,11 @@ var LoginBoxController = Class.create({
 	},
 	
 	login: function() {
-		API.login(this.view.getEmail(), this.view.getPassword());
+		API.login(this.view.getEmail(), this.view.getPassword(), function(success) {
+			if (!success) {
+				alert("Sorry, we couldn't find anyone with that email and password. Please try again or use the 'forgot my password' feature if you're stuck.");
+			}
+		});
 	},
 	
 	logout: function() {

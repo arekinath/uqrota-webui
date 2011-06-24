@@ -8,6 +8,11 @@
 //= require <ScrollFollower>
 
 document.observe("dom:loaded", function () {
+	API.observe('status', function(status) {
+		if (!status)
+			window.location.href = '/index.html';
+	});
+	
 	var lbc = new LoginBoxController();
 	var lbv = new LoginBoxView({ target: $('loginbox'), controller: lbc });
 	lbc.setView(lbv);
@@ -15,17 +20,12 @@ document.observe("dom:loaded", function () {
 	
 	new ScrollFollower({ target: $('leftcolumn') });
 	
-	API.checkLogin(function (status) {
-		if (!status) {
-			window.location.href = '/index.html';
-		} else {
-			MoreInfoPanel.instance = new MoreInfoPanel($('moreInfoPanel'));
-			var cbModel = new CourseSearchResults();
-			var cb = new CourseBrowser($('searchEdit'), $('searchResultsPanel'), cbModel);
-			
-			var sb = new SemesterBrowser($('boxPanel'), $('main'));
-			$('searchEdit').value = '';
-			$('searchEdit').focus();
-		}
-	});
+	MoreInfoPanel.instance = new MoreInfoPanel($('moreInfoPanel'));
+	var cbModel = new CourseSearchResults();
+	var cb = new CourseBrowser($('searchEdit'), $('searchResultsPanel'), cbModel);
+	
+	var sb = new SemesterBrowser($('boxPanel'), $('main'));
+	
+	$('searchEdit').value = '';
+	$('searchEdit').focus();
 });
