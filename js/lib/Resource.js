@@ -133,7 +133,7 @@ var Resource = Class.create({
 					if (callback)
 						callback();
 					this._call('destroy');
-				});
+				}.bind(this));
 			}.bind(this)
 		});
 	},
@@ -317,6 +317,17 @@ var Resource = Class.create({
 	 * from the backend available for this object.
 	 */
 	_setData: function(data) {
+		
+		var toCall = [];
+		if (this.data) {
+			for (x in this.data) {
+				if (x != '_class' && x != '_keys') {
+					if (Object.toJSON(this.data[x]) != Object.toJSON(data[x])) {
+						toCall.push(Model._fname('change', x));
+					}
+				}
+			}
+		}
 		this.data = data;
 		
 		// set up all our normal attributes
@@ -333,7 +344,10 @@ var Resource = Class.create({
 		}
 
 		// skip the rest if we have no relationships
-		if (!this.constructor.relations) return;
+		if (!this.constructor.relations) {
+			toCall.each(function(f) { this._call(f); }.bind(this));
+			return;
+		}
 		
 		// for each of our relationships
 		for (var i = 0; i < this.constructor.relations.length; i++) {
@@ -443,6 +457,8 @@ var Resource = Class.create({
 				}
 			}
 		}
+		
+		toCall.each(function(f) { this._call(f); }.bind(this));
 	}
 });
 
