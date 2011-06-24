@@ -9,7 +9,8 @@ Model.Timetable = Resource.make({
 	relations: [
 		belongs_to('user_semester'),
 		has_n('series_selections'),
-		has_n('group_selections')
+		has_n('group_selections'),
+		has_n('hidden_sessions')
 	],
 	creator: function(opts) {
 		var data = {};

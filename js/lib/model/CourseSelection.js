@@ -10,7 +10,8 @@ Model.CourseSelection = Resource.make({
 		belongs_to('plan_box'),
 		belongs_to('course'),
 		has_n('series_selections'),
-		has_n('group_selections')
+		has_n('group_selections'),
+		has_n('hidden_sessions')
 	],
 	creator: function(opts) {
 		var data = {};
