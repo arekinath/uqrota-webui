@@ -487,6 +487,7 @@ Resource._get = function(klass) {
 					var o = new klass();
 					o._setData(r.responseJSON);
 					klass.cache[o._id()] = o;
+					klass.cache[id] = o;
 					callback(o);
 				},
 				onFailure: function(r) {
