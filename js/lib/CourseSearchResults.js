@@ -2,10 +2,15 @@
 //= require <model/Course>
 
 /**
+ * class CourseSearchResults
+ * 
  * Model for search results used by the course browser.
- */
+ **/
 var CourseSearchResults = Class.create({
 	
+	/**
+	 * new CourseSearchResults()
+	 **/
 	initialize: function() {
 		this.results = [];
 		this.observers = {};
@@ -14,18 +19,21 @@ var CourseSearchResults = Class.create({
 	},
 	
 	/**
+	 * CourseSearchResults#size() -> int
+	 * 
 	 * Gets the size of the current results array 
-	 * @return int
-	 */
+	 **/
 	size: function() {
 		return this.results.length;
 	},
 	
 	/**
+	 * CourseSearchResults#observe(event, func) -> null
+	 * - event (string)
+	 * - func (function)
+	 * 
 	 * Add an event callback.
-	 * @param ev   string   event name
-	 * @param f    function callback
-	 */
+	 **/
 	observe: function(ev, f) {
 		if (!this.observers[ev])
 			this.observers[ev] = [];
@@ -33,20 +41,24 @@ var CourseSearchResults = Class.create({
 	},
 	
 	/**
+	 * CourseSearchResults#each(func) -> null
+	 * - func (function)
+	 * 
 	 * Executes a function for each current course in the search
-	 * @param f  function
-	 */
+	 **/
 	each: function(f) {
 		this.results.each(f);
 	},
 	
 	/**
+	 * CourseSearchResults#search(string) -> null
+	 * - string (string): string to search for
+	 * 
 	 * Updates the search model with a new search input string.
 	 * Input string is separated into space-separated terms and
 	 * searched for using database 'LIKE' operators. Each term
 	 * is surrounded with '%' characters automatically.
-	 * @param string		string		the new search string
-	 */
+	 **/
 	search: function(string) {
 		var parts = string.split(' ').collect(function(p) { return '%'+p+'%'; });
 		var query = {};
@@ -80,9 +92,11 @@ var CourseSearchResults = Class.create({
 	},
 	
 	/**
+	 * CourseSearchResults#get(n) -> object
+	 * - n (int): index into results
+	 * 
 	 * Gets the course model object that is result number n
-	 * @param n   int   index into results
-	 */
+	 **/
 	get: function(n) {
 		return this.results[n];
 	}
