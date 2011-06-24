@@ -3,83 +3,88 @@
 //= require <model/User>
 
 var LoginBoxView = Class.create({
-	initialize: function(div) {
-		this.elem = div;
-		this.update();
+	initialize: function(opts) {
+		if (opts && opts.target) {
+			this.elem = opts.target;
+		}
+		if (opts && opts.controller) {
+			this.controller = opts.controller;
+		}
+		API.observe('status', this.on_apiStatus.bind(this));
 	},
 	
-	update: function() {
-		API.checkLogin(function(loggedIn) {
-			if (loggedIn) {
-				Model.User.get('me', function(me) {
-					this.elem.update("Logged in as <b>" + me.getEmail() + "</b>&nbsp;&nbsp;");
-					var logoutLink = new Element('a', {'href': '#'});
-					logoutLink.addClassName('bluebutton');
-					logoutLink.update("Log out");
-					this.elem.appendChild(logoutLink);
-					logoutLink.observe('click', function(evt) {
-						evt.stop();
-						API.logout(function() {
-							window.location.href = "/index.html";
-						});
-					});
-				}.bind(this));
-			} else {
-				var emailEdit = new Element('input', { type: 'text', value: 'email' });
-				var passwordEdit = new Element('input', { type: 'password', value: 'password' });
-				var loginBtn = new Element('a', { href: '#' });
-				loginBtn.update('Log in');
-				loginBtn.addClassName('bluebutton');
-				
-				var lbox = this.elem;
-				lbox.update('');
-				lbox.appendChild(emailEdit);
-				lbox.insert('&nbsp;');
-				lbox.appendChild(passwordEdit);
-				lbox.insert('&nbsp;');
-				lbox.appendChild(loginBtn);
-				
-				emailEdit.observe('focus', function(evt) {
-					if (emailEdit.value == 'email')
-						emailEdit.value = '';
-				});
-				
-				passwordEdit.observe('focus', function(evt) {
-					if (passwordEdit.value == 'password')
-						passwordEdit.value = '';
-				});
-				
-				var loginHandler = function() {
-					this.elem.update('Logging in...');
-					API.login(emailEdit.value, passwordEdit.value, function(success) {
-						if (success) {
-							this.update();
-							if (window.location.href.indexOf('index.html') > 0)
-								window.location.href = '/courses.html';
-						} else {
-							alert('Sorry, but that email or password was not recognised');
-							this.update();
-						}
-					}.bind(this));
-				}.bind(this);
-				
-				loginBtn.observe('click', function(evt) {
-					evt.stop();
-					loginHandler();
-				});
-				emailEdit.observe('keypress', function(evt) {
-					if (evt.keyCode == Event.KEY_RETURN) {
-						evt.stop();
-						loginHandler();
-					}
-				});
-				passwordEdit.observe('keypress', function(evt) {
-					if (evt.keyCode == Event.KEY_RETURN) {
-						evt.stop();
-						loginHandler();
-					}
-				});
-			}
+	getEmail: function() {
+		return this.emailEdit.value;
+	},
+	
+	getPassword: function() {
+		return this.passwordEdit.value;
+	},
+	
+	makeLogOutUi: function() {
+		Model.User.get('me', function(me) {
+			this.elem.update("Logged in as <b>" + me.getEmail() + "</b>&nbsp;&nbsp;");
+			this.logoutLink = new Element('a', {'href': '#'});
+			this.logoutLink.addClassName('bluebutton');
+			this.logoutLink.update("Log out");
+			this.elem.appendChild(logoutLink);
+			this.logoutLink.observe('click', function(evt) {
+				evt.stop();
+				this.controller.logout();
+			}.bind(this));
 		}.bind(this));
+	},
+	
+	makeLogInUi: function() {
+		this.emailEdit = new Element('input', { type: 'text', value: 'email' });
+		this.passwordEdit = new Element('input', { type: 'password', value: 'password' });
+		this.loginBtn = new Element('a', { href: '#' });
+		this.loginBtn.update('Log in');
+		this.loginBtn.addClassName('bluebutton');
+		
+		var lbox = this.elem;
+		lbox.update('');
+		lbox.appendChild(emailEdit);
+		lbox.insert('&nbsp;');
+		lbox.appendChild(passwordEdit);
+		lbox.insert('&nbsp;');
+		lbox.appendChild(loginBtn);
+		
+		this.emailEdit.observe('focus', function(evt) {
+			if (this.emailEdit.value == 'email')
+				this.emailEdit.value = '';
+		}.bind(this));
+		
+		this.passwordEdit.observe('focus', function(evt) {
+			if (this.passwordEdit.value == 'password')
+				this.passwordEdit.value = '';
+		}.bind(this));
+			
+		var loginHandler = this.controller.login.bind(this.controller);
+		
+		this.loginBtn.observe('click', function(evt) {
+			evt.stop();
+			loginHandler();
+		});
+		this.emailEdit.observe('keypress', function(evt) {
+			if (evt.keyCode == Event.KEY_RETURN) {
+				evt.stop();
+				loginHandler();
+			}
+		});
+		this.passwordEdit.observe('keypress', function(evt) {
+			if (evt.keyCode == Event.KEY_RETURN) {
+				evt.stop();
+				loginHandler();
+			}
+		});
+	},
+	
+	on_apiStatus: function(status) {
+		if (status) {
+			this.makeLogOutUi();
+		} else {
+			this.makeLogInUi();
+		}
 	}
 });

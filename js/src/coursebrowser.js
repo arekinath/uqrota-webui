@@ -4,18 +4,15 @@
 //= require <API>
 //= require <SemesterBrowser>
 //= require <LoginBoxView>
+//= require <ScrollFollower>
 
 document.observe("dom:loaded", function () {
-	var lbv = new LoginBoxView($('loginbox'));	
+	var lbc = new LoginBoxController();
+	var lbv = new LoginBoxView({ target: $('loginbox'), controller: lbc });
+	lbc.setView(lbv);
+	lbc.startup();
 	
-	var coff = $('leftcolumn').cumulativeOffset();
-	document.observe('scroll', function(evt) {
-		var so = document.viewport.getScrollOffsets();
-		if (so.top >= coff.top)
-			$('leftcolumn').style.top = (so.top - coff.top + 10) + 'px';
-		else
-			$('leftcolumn').style.top = '0px';
-	});
+	new ScrollFollower({ target: $('leftcolumn') });
 	
 	API.checkLogin(function (status) {
 		if (!status) {

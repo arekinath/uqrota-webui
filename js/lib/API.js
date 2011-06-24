@@ -6,6 +6,32 @@
  * Auxiliary namespace for API utilities like login management
  **/
 var API = {};
+API._observers = {};
+
+/**
+ * API.observe(event, callback) -> null
+ * - event (string)
+ * - callback (function(?))
+ * 
+ * Registers a callback to happen on an event. Valid events:
+ * - status : called with bool when login status changes
+ **/
+API.observe = function(evt, callback) {
+	if (!API._observers[evt])
+		API._observers[evt] = [];
+	API._observers[evt].push(callback);
+}
+
+API._call = function(evt, arg) {
+	if (API._observers[evt]) {
+		API._observers[evt].each(function(cb) {
+			if (arg)
+				cb(arg);
+			else
+				cb();
+		});
+	}
+}
 
 /**
  * API.checkLogin([callback]) -> null
@@ -22,13 +48,18 @@ API.checkLogin = function(callback) {
 			if (t.responseJSON.logged_in) {
 				API.secret = t.responseJSON.secret;
 				Model.User.cache.me = undefined;
-				callback(true);
+				if (callback)
+					callback(true);
+				API._call('status', true);
 			} else {
-				callback(false);
+				if (callback)
+					callback(false);
+				API._call('status', false);
 			}
 		},
 		onFailure: function(t) {
 			// error message?
+			setTimeout(function() { API.checkLogin(); }, 1000);
 		}
 	});
 }
@@ -41,7 +72,7 @@ API.checkLogin = function(callback) {
  * 
  * Attempts to log in with the email and password given.
  **/
-API.login = function(email, pass, callback) {
+API.login = function(email, pass) {
 	new Ajax.Request('/user/login.json', {
 		method: 'post',
 		evalJSON: 'force',
@@ -50,9 +81,9 @@ API.login = function(email, pass, callback) {
 			if (t.responseJSON.success) {
 				API.secret = t.responseJSON.secret;
 				Model.User.cache.me = undefined;
-				callback(true);
+				API._call('status', true);
 			} else {
-				callback(false);
+				API._call('status', false);
 			}
 		}
 	});
@@ -64,7 +95,7 @@ API.login = function(email, pass, callback) {
  * 
  * Logs out of the API backend
  **/
-API.logout = function(callback) {
+API.logout = function() {
 	new Ajax.Request('/user/logout.json', {
 		method: 'post',
 		evalJSON: 'force',
@@ -72,8 +103,7 @@ API.logout = function(callback) {
 			if (t.responseJSON.success) {
 				API.secret = null;
 				Model.User.cache.me = undefined;
-				if (callback)
-					callback();
+				API._call('status', false);
 			}
 		}
 	});
@@ -115,6 +145,7 @@ API.register = function(email, pass, token, callback) {
 				API.secret = t.responseJSON.secret;
 				Model.User.cache.me = undefined;
 				callback(true);
+				API._call('status', true);
 			} else {
 				callback(false);
 			}
