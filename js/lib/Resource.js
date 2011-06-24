@@ -45,6 +45,34 @@ var Resource = Class.create({
 	
 	initialize: function() {
 		this.data = {};
+		this._observers = {};
+	},
+	
+/**
+ * Resource#observe(event, callback) -> null
+ * - event (string)
+ * - callback (function)
+ * 
+ * Registers a callback to be called when an event occurs
+ **/
+	observe: function(evt, callback) {
+		if (!this._observers[evt])
+			this._observers[evt] = [];
+		this._observers[evt].push(callback);
+	},
+	
+	/*
+	 * Calls the observers for a given event
+	 */
+	_call: function(evt, arg) {
+		if (this._observers[evt]) {
+			this._observers[evt].each(function(cb) {
+				if (typeof(arg) != 'undefined')
+					cb(arg);
+				else
+					cb();
+			});
+		}
 	},
 	
 	/*
@@ -83,6 +111,7 @@ var Resource = Class.create({
 				this._setData(t.responseJSON);
 				if (callback)
 					callback();
+				this._call('refresh');
 			}.bind(this)
 		});
 	},
@@ -100,7 +129,11 @@ var Resource = Class.create({
 			requestHeaders: {"X-Api-Secret": API.secret},
 			onSuccess: function(t) {
 				this.constructor.cache[this._id()] = undefined;
-				this._refreshParents(callback);
+				this._refreshParents(function() {
+					if (callback)
+						callback();
+					this._call('destroy');
+				});
 			}.bind(this)
 		});
 	},
@@ -256,7 +289,11 @@ var Resource = Class.create({
 					this.isNew = false;
 					
 					// force parents to refresh
-					this._refreshParents(callback);
+					this._refreshParents(function() {
+						if (callback)
+							callback();
+						this._call('save');
+					});
 				}.bind(this)
 			});
 		} else {
@@ -269,6 +306,7 @@ var Resource = Class.create({
 					this._setData(t.responseJSON);
 					if (callback)
 						callback();
+					this._call('save');
 				}.bind(this)
 			});
 		}
@@ -289,6 +327,7 @@ var Resource = Class.create({
 				}; }(x);
 				this[Model._fname('set',x)] = function(x) { return function(v) {
 					this.data[x] = v;
+					this._call(Model._fname('change', x), v);
 				}; }(x);
 			}
 		}
@@ -362,6 +401,7 @@ var Resource = Class.create({
 				this[Model._fname('set',r.attr)] = function(r) {
 					return function(val) {
 						this.data[r.attr] = val.zeroLevelData(true);
+						this._call(Model._fname('change', r.attr), val);
 					};
 				}(r);
 			} else {
