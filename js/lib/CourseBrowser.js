@@ -4,16 +4,20 @@
 //= require <dragdrop>
 
 /**
+ * class CourseBrowser
+ * 
  * The course browser component, on the left-hand side of the Semester plan screen.
  * It allow users to search for courses and drag them out.
- */
+ **/
 var CourseBrowser = Class.create({
 	
 	/**
-	 * @param searchBox	    elem   Element reference to the search text box
-	 * @param resultsPanel  elem   panel to be filled with the search results
-	 * @param model         CourseSearchResults   model to use
-	 */
+	 * new CourseBrowser(searchBox, resultsPanel, model)
+	 * 
+	 * - searchBox (elem): Element reference to the search text box
+	 * - resultsPanel (elem): panel to be filled with the search results
+	 * - model (CourseSearchResults): model to use
+	 **/
 	initialize: function(searchBox, resultsPanel, model) {
 		this.model = model;
 		this.searchBox = searchBox;
@@ -27,16 +31,20 @@ var CourseBrowser = Class.create({
 	},
 	
 	/**
+	 * CourseBrowser#showSearching() -> null
+	 * 
 	 * Displays the text saying 'searching' whilst waiting for a reply.
-	 */
+	 **/
 	showSearching: function() {
 		this.resultsPanel.update('Searching...');
 	},
 	
 	/**
+	 * CourseBrowser#update() -> null
+	 * 
 	 * Updates the displayed search results, emptying and regenerating the
 	 * search results panel.
-	 */
+	 **/
 	update: function() {
 		this.resultsPanel.update();
 		this.model.each(function(cs) {
@@ -59,8 +67,10 @@ var CourseBrowser = Class.create({
 	},
 	
 	/**
+	 * CourseBrowser#searchBoxChanged() -> null
+	 * 
 	 * Called whenever the search edit box is updated.
-	 */
+	 **/
 	searchBoxChanged: function() {
 		if (this.searchBox.value == this.lastValue)
 			return;

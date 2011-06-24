@@ -2,15 +2,21 @@
 //= require <PlanBoxView>
 
 /**
+ * class UserSemesterView
+ * 
  * Displays a box representing a UserSemester object, containing
  * PlanBoxes and having a title (such as 'Semester 2, 2011' etc)
- */
+ **/
+
+/* TODO: separate concerns between this class and the model better */
+
 var UserSemesterView = Class.create({
 	
 	/**
-	 * @param model		Model.UserSemester
-	 * @param elem		element				element to fill
-	 */
+	 * new UserSemesterView(semesterBrowser, model, elem)
+	 * - model (Model.UserSemester)
+	 * - elem (element): element to fill
+	 **/
 	initialize: function(sb, model, elem) {
 		this.browser = sb;
 		this.model = model;
@@ -19,6 +25,11 @@ var UserSemesterView = Class.create({
 		this.update();
 	},
 	
+	/**
+	 * UserSemesterBrowser#remove() -> null
+	 * 
+	 * Destroys the model object and removes this view from the display
+	 **/
 	remove: function() {
 		this.model.destroy(function() {
 			this.element.remove();
@@ -26,9 +37,11 @@ var UserSemesterView = Class.create({
 	},
 	
 	/**
+	 * UserSemesterBrowser#update() -> null
+	 * 
 	 * Destroys and re-creates the contents of the UserSemesterView,
 	 * creating the title span and all the PlanBoxViews.
-	 */
+	 **/
 	update: function() {
 		this.element.update('');
 		this.model.getSemester(function(sem) {
