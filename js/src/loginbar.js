@@ -1,5 +1,6 @@
 //= require <prototype>
 //= require <LoginBoxView>
+//= require <LoginBoxController>
 
 document.observe("dom:loaded", function () {
 	var lbc = new LoginBoxController();

@@ -44,12 +44,12 @@ var LoginBoxView = Class.create({
 		
 		var lbox = this.elem;
 		lbox.update('');
-		lbox.appendChild(emailEdit);
+		lbox.appendChild(this.emailEdit);
 		lbox.insert('&nbsp;');
-		lbox.appendChild(passwordEdit);
+		lbox.appendChild(this.passwordEdit);
 		lbox.insert('&nbsp;');
-		lbox.appendChild(loginBtn);
-		
+		lbox.appendChild(this.loginBtn);
+				
 		this.emailEdit.observe('focus', function(evt) {
 			if (this.emailEdit.value == 'email')
 				this.emailEdit.value = '';

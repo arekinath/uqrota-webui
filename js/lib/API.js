@@ -25,7 +25,7 @@ API.observe = function(evt, callback) {
 API._call = function(evt, arg) {
 	if (API._observers[evt]) {
 		API._observers[evt].each(function(cb) {
-			if (arg)
+			if (typeof(arg) != 'undefined')
 				cb(arg);
 			else
 				cb();

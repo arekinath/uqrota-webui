@@ -4,6 +4,7 @@
 //= require <API>
 //= require <SemesterBrowser>
 //= require <LoginBoxView>
+//= require <LoginBoxController>
 //= require <ScrollFollower>
 
 document.observe("dom:loaded", function () {

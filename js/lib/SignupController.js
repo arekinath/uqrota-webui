@@ -4,11 +4,11 @@
 //= require <model/User>
 
 var SignupController = Class.create({
-	initialize: function(emailEdit, pwEdit, pwConfirmEdit, submitButton) {
-		this.emailEdit = emailEdit;
-		this.pwEdit = pwEdit;
-		this.pwConfirmEdit = pwConfirmEdit;
-		this.submitButton = submitButton;
+	initialize: function(opts) {
+		this.emailEdit = opts.email;
+		this.pwEdit = opts.pw;
+		this.pwConfirmEdit = opts.pwConfirm;
+		this.submitButton = opts.submit;
 		
 		this.emailOk = false;
 		this.emailTout = null;
