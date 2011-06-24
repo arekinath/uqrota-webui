@@ -82,6 +82,18 @@ NOTE: Instead of putting out all the logging information,
 
 var PasswordRating = {};
 
+/**
+ * class PasswordRating
+ **/
+
+/**
+ * PasswordRating.rate(passwd) -> object
+ * - passwd(string)
+ * 
+ * Rates a password and returns a rating object which has properties
+ * "score" and "verdict".
+ **/
+
 PasswordRating.rate = function(passwd) {
 	var intScore   = 0
 	var strVerdict = "weak"
