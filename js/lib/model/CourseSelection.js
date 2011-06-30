@@ -9,6 +9,7 @@ Model.CourseSelection = Resource.make({
 	relations: [
 		belongs_to('plan_box'),
 		belongs_to('course'),
+		belongs_to('offering'),
 		has_n('series_selections'),
 		has_n('group_selections'),
 		has_n('hidden_sessions')
