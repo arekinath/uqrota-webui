@@ -4,4 +4,3 @@
 //= require <model/UserTimetable>
 //= require <model/CourseSelection>
 //= require <model/SeriesSelection>
-//= require <model/GroupSelection>

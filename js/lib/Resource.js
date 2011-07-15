@@ -254,11 +254,15 @@ var Resource = Class.create({
 				if (rel.type == 'belongs_to') {
 					var fname = Model._fname('get', rel.attr);
 					this[fname](function(obj) {
-						obj.refresh(function() {
+						var ef = function() {
 							received++;
 							if (received == sent && callback)
 								callback();
-						});
+						};
+						if (obj)
+							obj.refresh(ef);
+						else
+							ef();
 					});
 				}
 			}
@@ -293,7 +297,7 @@ var Resource = Class.create({
 						if (callback)
 							callback();
 						this._call('save');
-					});
+					}.bind(this));
 				}.bind(this)
 			});
 		} else {
@@ -359,6 +363,10 @@ var Resource = Class.create({
 					var objs = [];
 					var objos = [];
 					var pobjs = data[r.attr];
+					if (pobjs == null) {
+						callback(null);
+						return;
+					}
 					if (typeof(pobjs.length) == 'undefined') pobjs = [ pobjs ];
 					
 					if (pobjs.length == 0) {

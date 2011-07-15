@@ -4,7 +4,7 @@
 Model.CourseSelection = Resource.make({
 	url_patterns: {
 		create: '/my/courseselection/new.json',
-		resource: 'my/courseselection/{0}.json'
+		resource: '/my/courseselection/{0}.json'
 	},
 	relations: [
 		belongs_to('plan_box'),
