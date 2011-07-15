@@ -9,4 +9,6 @@ Model.Semester = Resource.make({
 		belongs_to('pred'),
 		belongs_to('succ')
 	]
+},{
+	
 });

@@ -11,7 +11,6 @@ Model.CourseSelection = Resource.make({
 		belongs_to('course'),
 		belongs_to('offering'),
 		has_n('series_selections'),
-		has_n('group_selections'),
 		has_n('hidden_sessions')
 	],
 	creator: function(opts) {
